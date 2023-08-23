@@ -1,0 +1,19 @@
+{
+  "name": "phenix-docs",
+  "version": "0.0.1",
+  "description": "Phenix framework documentation",
+  "main": "index.js",
+  "authors": {
+    "name": "Omar Barbosa",
+    "email": "contacto@omarbarbosa.com"
+  },
+  "repository": "https://github.com/barbosa89/phenix-docs",
+  "scripts": {
+    "dev": "vuepress dev src",
+    "build": "vuepress build src"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "vuepress": "^1.5.3"
+  }
+}
