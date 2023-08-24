@@ -12,7 +12,7 @@ You must have [Composer](https://getcomposer.org/) installed on your computer; T
 composer create-project barbosa89/phenix phenix --stability=dev
 ```
 
-After the project has been created, start Phenix's server using the Phenix's CLI command:
+After the project has been created, start Phenix's server with the following command:
 
 ```
 php public/index.php
