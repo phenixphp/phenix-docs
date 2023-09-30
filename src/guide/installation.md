@@ -17,3 +17,17 @@ After the project has been created, start Phenix's server with the following com
 ```
 php public/index.php
 ```
+
+## Send request
+
+Using CURL, you can send a test request:
+
+```
+curl http://127.0.0.1:1337
+```
+
+The server responds with a default greeting:
+
+```
+Hello, world!
+```

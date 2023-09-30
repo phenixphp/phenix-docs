@@ -50,6 +50,13 @@ module.exports = {
           children: [
             '',
             'installation',
+            'getting_started',
+            'cli',
+            'routing',
+            'request_response',
+            'query_builder',
+            'orm',
+            'filesystem',
           ]
         }
       ],
