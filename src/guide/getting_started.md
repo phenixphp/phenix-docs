@@ -45,7 +45,7 @@ Copy and paste the user table structure, it should look like this:
 
 declare(strict_types=1);
 
-use Core\Database\Migration;
+use Phenix\Database\Migration;
 
 class CreateUsersTable extends Migration
 {
@@ -101,7 +101,7 @@ Copy the seeder code, it should look like this:
 
 declare(strict_types=1);
 
-use Core\Database\Seed;
+use Phenix\Database\Seed;
 
 class UsersSeeder extends Seed
 {
@@ -165,7 +165,7 @@ namespace App\Http\Controllers;
 use Amp\Http\Server\Request;
 use Amp\Http\Server\Response;
 use Amp\Http\HttpStatus;
-use Core\Http\Controller;
+use Phenix\Http\Controller;
 
 class UserController extends Controller
 {
@@ -323,6 +323,21 @@ Route::get('/users/{user}', [UserController::class, 'show']);
 
 **Remember** that every time we make changes to our code, we must restart the server.
 
+```php
+public function show(Request $request): Response
+{
+    $userId = $this->getAttr($request, 'user');
+
+    $user = DB::table('users')
+        ->whereEqual('id', $userId)
+        ->first();
+
+    return response()->json($user, HttpStatus::OK);
+}
+```
+
+The JSON response:
+
 ```json
 {
     "data": {
@@ -395,7 +410,7 @@ public function delete(Request $request): Response
 }
 ```
 
-We have completed this short quick start guide to show fundamental concepts of the framework: routes and controllers, requests, the server. In the following sections, concepts about the architecture of the framework and its characteristics will be deepened.
+We have completed this short quick start guide to show fundamental concepts of the framework: routes and controllers, requests, run server. In the following sections, concepts about the architecture of the framework and its characteristics will be deepened.
 
 > **Important** <br>
 > If you liked Phenix, and you have seen the potential and the great opportunity we have in the PHP community, I invite you to give it a star on [GitHub](https://github.com/phenixphp/phenix) and contribute to the development of this powerful framework.
