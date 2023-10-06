@@ -9,7 +9,7 @@
 You must have [Composer](https://getcomposer.org/) installed on your computer; To create your first Phenix project, you can run Composer's **create-project** command.
 
 ```
-composer create-project barbosa89/phenix phenix --stability=dev
+composer create-project phenixphp/phenix phenix
 ```
 
 After the project has been created, start Phenix's server with the following command:

@@ -1,6 +1,6 @@
 # Introduction
 
-I have a dream: high performance, highly scalable and very fast written applications written in PHP; and now that we have fibers in the PHP core, I feel it is the right time for this dream to become a reality.
+I have a dream: high performance, highly scalable and very fast applications written in PHP; and since there are now fibers in the core of PHP, I feel that the time is right for this dream to come true.
 
 Phenix is a web framework built on pure PHP, without external extensions, based on the [Amphp](https://amphp.org/) ecosystem, which provides non-blocking operations, asynchronism and parallel code execution natively. It runs in the PHP SAPI CLI and on its own server, it is simply powerful.
 
@@ -23,9 +23,11 @@ Since Phenix has its own web server framework, you can use it to build web servi
 If you wanted to compare it with other frameworks then think about ExpressJS.
 ## Performance
 
-One of the most interesting aspects when trying to get to know a new framework is performance, which is why I present a performance test made with ApacheBench version 2.3; for this test XDebug was disabled:
+One of the most interesting aspects when trying to get to know a new framework is performance, which is why I present a performance test made with Apache Bench version 2.3; for this test XDebug was disabled:
 
 ```
+ab -n100000 -c50 -k http://127.0.0.1:1337/
+
 Concurrency Level:      50
 Time taken for tests:   14.008 seconds
 Complete requests:      100000
@@ -41,7 +43,7 @@ Transfer rate:          801.70 [Kbytes/sec] received
 
 ## The framework name
 
-The name Phenix comes from the union between PHP and Phoenix, basically I try to highlight that PHP will never die, it simply resurfaces better and better again and again, each time it is reborn it is much better than its previous version.
+The name Phenix comes from the union between PHP and Phoenix (PHP + Phoenix = Phenix), basically I try to highlight that PHP will never die, it simply resurfaces better and better again and again, each time it is reborn it is much better than its previous version.
 
 ## Development status
 

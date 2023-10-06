@@ -39,7 +39,7 @@ module.exports = {
       },
       {
         text: 'GitHub',
-        link: 'https://github.com/barbosa89/phenix'
+        link: 'https://github.com/phenixphp/phenix'
       }
     ],
     sidebar: {

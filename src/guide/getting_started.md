@@ -7,7 +7,7 @@ The best way to learn is by practicing, let's create a basic CRUD using the quer
 This guide assumes that you are using [Visual Studio](https://code.visualstudio.com/) Code as your text editor and Ubuntu as your operating system. If you are a Windows user, it is recommended to use Ubuntu with WSL.
 
 ```
-composer create-project barbosa89/phenix phenix --stability=dev
+composer create-project phenixphp/phenix phenix
 
 // Go to root path
 cd phenix
@@ -19,6 +19,7 @@ code .
 Edit the database configuration variables to establish a connection in the **.env** file, the default database connection is **mysql**.
 
 ```
+DB_CONNECTION=mysql
 DB_DATABASE=phenix
 DB_USERNAME=root
 DB_PASSWORD=secret
@@ -214,15 +215,13 @@ Now let's add code to the index method, the code should look like this:
 ```php
 public function index(Request $request): Response
 {
-    $users = DB::table('users')
-        ->selectAllColumns()
-        ->paginate($request->getUri());
+    $users = DB::table('users')->paginate($request->getUri());
 
     return response()->json($users);
 }
 ```
 
-The first thing to mention is that we inject the **request** into the index method, so the paginator has access to the URL variables to establish which page will be queried and if there are query parameters they will be loaded to the URLs that are generated in the response. The `selectAllColumns` method indicates that we will use the asterisk (*) wildcard to get all the columns in the table; It is important to highlight that the query builder always requires a selection of columns. To get all the data in the users table, just use the `get` method.
+The first thing to mention is that we inject the **request** into the index method, so the paginator has access to the URL variables to establish which page will be queried and if there are query parameters they will be loaded to the URLs that are generated in the response. To get all the data in the users table just use the `get` method instead `paginate` method.
 
 Open the terminal using the shortcut **Ctrl + Shift + \`**, and run the server.
 
@@ -286,7 +285,6 @@ public function store(Request $request): Response
     DB::table('users')->insert($data);
 
     $user = DB::table('users')
-        ->selectAllColumns()
         ->whereEqual('email', $data['email'])
         ->first();
 
@@ -356,7 +354,6 @@ public function update(Request $request): Response
         ->update(['name' => $data['name']]);
 
     $user = DB::table('users')
-        ->selectAllColumns()
         ->whereEqual('id', $userId)
         ->first();
 
@@ -401,4 +398,4 @@ public function delete(Request $request): Response
 We have completed this short quick start guide to show fundamental concepts of the framework: routes and controllers, requests, the server. In the following sections, concepts about the architecture of the framework and its characteristics will be deepened.
 
 > **Important** <br>
-> If you liked Phenix, and you have seen the potential and the great opportunity we have in the PHP community, I invite you to give it a star on [GitHub](https://github.com/barbosa89/phenix) and contribute to the development of this powerful framework.
+> If you liked Phenix, and you have seen the potential and the great opportunity we have in the PHP community, I invite you to give it a star on [GitHub](https://github.com/phenixphp/phenix) and contribute to the development of this powerful framework.
