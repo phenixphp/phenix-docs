@@ -202,6 +202,7 @@ This method allows us to obtain all the users created in the database, at this p
 
 ```php
 use App\Http\Controllers\UserController;
+use Phenix\Facades\Route;
 
 // ...
 
@@ -324,12 +325,16 @@ Route::get('/users/{user}', [UserController::class, 'show']);
 **Remember** that every time we make changes to our code, we must restart the server.
 
 ```php
+use Phenix\Http\Attributes;
+
+...
+
 public function show(Request $request): Response
 {
-    $userId = $this->getAttr($request, 'user');
+    $attributes = Attributes::fromRequest($request);
 
     $user = DB::table('users')
-        ->whereEqual('id', $userId)
+        ->whereEqual('id', $attributes->integer('user'))
         ->first();
 
     return response()->json($user, HttpStatus::OK);
@@ -359,17 +364,18 @@ Route::patch('/users/{user}', [UserController::class, 'update']);
 We will only update the **name** for practical purposes.
 
 ```php
+
 public function update(Request $request): Response
 {
-    $userId = $this->getAttr($request, 'user');
+    $attributes = Attributes::fromRequest($request);
     $data = json_decode($request->getBody()->read(), true);
 
     DB::table('users')
-        ->whereEqual('id', $userId)
+        ->whereEqual('id', $attributes->integer('user'))
         ->update(['name' => $data['name']]);
 
     $user = DB::table('users')
-        ->whereEqual('id', $userId)
+        ->whereEqual('id', $attributes->integer('user'))
         ->first();
 
     return response()->json($user, HttpStatus::OK);
@@ -400,10 +406,10 @@ The response will be a simple message:
 ```php
 public function delete(Request $request): Response
 {
-    $userId = $this->getAttr($request, 'user');
+    $attributes = Attributes::fromRequest($request);
 
     DB::table('users')
-        ->whereEqual('id', $userId)
+        ->whereEqual('id', $attributes->integer('user'))
         ->delete();
 
     return response()->json(['message' => 'Ok'], HttpStatus::OK);
