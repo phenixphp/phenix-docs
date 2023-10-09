@@ -3,6 +3,9 @@
 ## Requirements
 
 - php:^8.1
+- ext-pcntl
+
+Typically the PCNTL extension is part of the default PHP installation, you can check if the extension is active with the `php -m` command, if it is not listed you must activate it.
 
 ## Composer installation
 
