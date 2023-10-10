@@ -53,13 +53,11 @@ module.exports = {
             'getting_started',
             'architecture',
             'providers',
-            'cli',
             'routing',
-            'request_response',
+            'controllers',
             'migrations',
             'seeders',
             'query_builder',
-            'orm',
             'filesystem',
           ]
         }
