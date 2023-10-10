@@ -101,3 +101,42 @@ Route::patch('/users/{user}', [UserController::class, 'update']);
 
 Route::delete('/users/{user}', [UserController::class, 'delete']);
 ```
+
+## Responses
+
+The default design of Phenix includes JSON type responses and in plain text, binary responses will be added very soon, the `Phenix\Http\Response` class is the component responsible for facilitating server responses and is a wrapper of the `Amp\Http\Server\Response` class. The global helper `response` is a function that allows you to create instances of the `Phenix\Http\Response` class in an elegant way.
+
+### Plain responses
+
+The `plain` method returns a response with a `Content-type` header equal to `text/plain`, this method accepts two arguments, the first a string and a second argument that corresponds to the HTTP status code.
+
+```php
+return response()->plain('Hello, world!' . PHP_EOL);
+```
+
+Response with custom HTTP status code:
+
+```php
+use Amp\Http\HttpStatus;
+
+return response()->plain('Hello, world!' . PHP_EOL, HttpStatus::OK);
+```
+
+### JSON responses
+
+The `json` method returns a response with a `Content-type` header equal to `application/json`, this method accepts two arguments, the first an array or an object that implements the `Phenix\Contracts\Arrayable` contract, and like `plain`, a second argument that corresponds to the HTTP status code.
+
+```php
+return response()->json(['message' => 'Hello, world!']);
+```
+
+Response with object that implements the `Phenix\Contracts\Arrayable` contract:
+
+```php
+use Phenix\Data\Collection;
+
+$users = new Collection('array');
+$users->add(['name' => 'John Doe']);
+
+return response()->json($users);
+```
