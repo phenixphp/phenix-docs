@@ -61,7 +61,7 @@ public function index(Request $request): Response
 }
 ```
 
-The paginate method receives an `League\Uri\Http` instance of the `Amp\Http\Server\Request` object, which contains the query strings and the path of the URL, the pagination structure is as follows:
+The paginate method receives an `League\Uri\Http` instance of the `Amp\Http\Server\Request` class, which contains the query strings and the path of the URL, the pagination structure is as follows:
 
 ```json
 {
@@ -425,7 +425,7 @@ $users = DB::select([
     ->get();
 ```
 
-The `Phenix\Database\Join` object has methods like `onEqual`, `orOnEqual`, `onDistinct`, `orOnDistinct` in addition to the **where** methods seen previously.
+The `Phenix\Database\Join` class has methods like `onEqual`, `orOnEqual`, `onDistinct`, `orOnDistinct` in addition to the **where** methods seen previously.
 
 Joins can also be constructed using a short syntax with the following methods: `innerJoinOnEqual`, `leftJoinOnEqual`, `rightJoinOnEqual`.
 
@@ -433,14 +433,83 @@ Joins can also be constructed using a short syntax with the following methods: `
 use Phenix\Database\Join;
 
 $users = DB::select([
-            'products.id',
-            'products.description',
-            'categories.description',
-        ])
-        ->from('products')
-        ->innerJoinOnEqual('categories', 'products.category_id', 'categories.id')
-        ->get();
+        'products.id',
+        'products.description',
+        'categories.description',
+    ])
+    ->from('products')
+    ->innerJoinOnEqual('categories', 'products.category_id', 'categories.id')
+    ->get();
 ```
 
 ## Having clause
 
+The `HAVING` clause is used to filter rows in the result set of a query that has been grouped using the `GROUP BY` clause. While the `WHERE` clause filters individual rows before they are grouped, the `HAVING` clause filters the grouped rows based on specified conditions. It is typically used in conjunction with aggregate functions like `SUM`, `COUNT`, `AVG`, etc., to filter and retrieve summary data that meets specific criteria. The `HAVING` clause allows you to apply conditions to the grouped data, helping to refine query results and perform operations on aggregated values, making it a valuable tool for data analysis and reporting.
+
+```php
+use Phenix\Database\Functions;
+use Phenix\Database\Having;
+use Phenix\Database\Join;
+
+$users = DB::select([
+        Functions::count('products.id')->as('identifiers'),
+        'products.category_id',
+        'categories.description',
+    ])
+    ->from('products')
+    ->leftJoin('categories', function (Join $join) {
+        $join->onEqual('products.category_id', 'categories.id');
+    })
+    ->groupBy('products.category_id')
+    ->having(function (Having $having): void {
+        $having->whereGreatherThan('identifiers', 5)
+            ->whereGreatherThan('products.category_id', 10);
+    })
+    ->get();
+```
+
+The `Phenix\Database\Having` class extends from `Phenix\Database\Clause`, therefore it has all the **where** methods seen previously.
+
+## Insert statement
+
+The `insert` method allows you to create new records in the database, you can insert one or many records.
+
+```php
+DB::table('users')
+    ->insert([
+        'name' => 'John Doe',
+        'email' => 'john.doe@email.com',
+    ]);
+
+DB::table('users')
+    ->insert([
+        [
+            'name' => 'John Doe',
+            'email' => 'john.doe@email.com',
+        ],
+        [
+            'name' => 'Tony Stark',
+            'email' => 'tony.stark@email.com',
+        ],
+    ]);
+```
+
+The following methods will be implemented soon: `insertOrIgnore`, `upsert`, `insertFrom`.
+
+## Update records
+
+To update existing records in the database, you can use the `update` method.
+
+```php
+DB::table('users')
+    ->whereEqual('id', 1)
+    ->update(['name' => 'John Edison Doe'])
+```
+
+## Delete records
+
+Finally, to delete records from the database you can use the `delete` method. Remember to add clauses when deleting records.
+
+```php
+DB::table('users')->whereEqual('id', 1)->delete();
+```
