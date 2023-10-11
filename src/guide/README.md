@@ -48,3 +48,9 @@ The name Phenix comes from the union between PHP and Phoenix (PHP + Phoenix = Ph
 ## Development status
 
 Phenix is in active development, **not production ready**, I hope to release the first stable version very soon.
+
+## Project objective
+
+All basic features built constitute a minimum viable product (MVP), with the objective to obtain the PHP community support and continue with the framework development. The opportunity offered by the Amphp ecosystem has a lot of potential: asynchronous code, parallelism and concurrency in PHP.
+
+Let's create amazing applications with the full potential of PHP.
