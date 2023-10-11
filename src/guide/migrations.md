@@ -56,7 +56,9 @@ php phenix migrate:rollback
 
 To roll back to a specific version you can use the `-t` option:
 
+```
 php phenix migrate:rollback -t 20231006144210
+```
 
 ## Tables
 
