@@ -55,6 +55,7 @@ module.exports = {
             'providers',
             'routing',
             'controllers',
+            'validation',
             'migrations',
             'seeders',
             'query_builder',
