@@ -137,7 +137,7 @@ Case is an important utility for obtaining values under conditions:
 use Phenix\Database\Functions;
 
 $case = Functions::case()
-    ->whenGreatherThan('price', 100, 'expensive')
+    ->whenGreaterThan('price', 100, 'expensive')
     ->defaultResult('cheap')
     ->as('type');
 
@@ -207,7 +207,7 @@ The `count` method allows you to count the records in a table, you can apply cla
 ```php
 $count = DB::from('products')->count();
 
-$count = DB::from('products')->whereGreatherThan('price', 100)->count();
+$count = DB::from('products')->whereGreaterThan('price', 100)->count();
 ```
 
 ## Exists sentence
@@ -228,9 +228,9 @@ The where clauses are used to filter the results of a query. It allows you to sp
 $users = DB::from('users')->whereDistinct('id', 1)->get();
 ```
 
-Simple comparison methods are: `whereEqual`, `whereDistinct`, `whereGreatherThan`, `whereGreatherThanOrEqual`, `whereLessThan`, `whereLessThanOrEqual`.
+Simple comparison methods are: `whereEqual`, `whereDistinct`, `whereGreaterThan`, `whereGreaterThanOrEqual`, `whereLessThan`, `whereLessThanOrEqual`.
 
-`ANY`, `ALL` and `SOME` clause methods: `whereAnyEqual`, `whereAnyDistinct`, `whereAnyGreatherThan`, `whereAnyGreatherThanOrEqual`, `whereAnyLessThan`, `whereAnyLessThanOrEqual`, `whereAllEqual`, `whereAllDistinct`, `whereAllGreatherThan`, `whereAllGreatherThanOrEqual`, `whereAllLessThan`, `whereAllLessThanOrEqual`, `whereSomeEqual`, `whereSomeDistinct`, `whereSomeGreatherThan`, `whereSomeGreatherThanOrEqual`, `whereSomeLessThan`, `whereSomeLessThanOrEqual`.
+`ANY`, `ALL` and `SOME` clause methods: `whereAnyEqual`, `whereAnyDistinct`, `whereAnyGreaterThan`, `whereAnyGreaterThanOrEqual`, `whereAnyLessThan`, `whereAnyLessThanOrEqual`, `whereAllEqual`, `whereAllDistinct`, `whereAllGreaterThan`, `whereAllGreaterThanOrEqual`, `whereAllLessThan`, `whereAllLessThanOrEqual`, `whereSomeEqual`, `whereSomeDistinct`, `whereSomeGreaterThan`, `whereSomeGreaterThanOrEqual`, `whereSomeLessThan`, `whereSomeLessThanOrEqual`.
 
 You can chain conditions with the `OR` operator:
 
@@ -241,7 +241,7 @@ $users = DB::from('users')
     ->get();
 ```
 
-Methods corresponding to the `OR` operator: `orWhereEqual`, `orWhereDistinct`, `orWhereGreatherThan`, `orWhereGreatherThanOrEqual`, `orWhereLessThan`, `orWhereLessThanOrEqual`.
+Methods corresponding to the `OR` operator: `orWhereEqual`, `orWhereDistinct`, `orWhereGreaterThan`, `orWhereGreaterThanOrEqual`, `orWhereLessThan`, `orWhereLessThanOrEqual`.
 
 ### In and not in
 
@@ -262,7 +262,7 @@ $users = DB::table('users')
     ->whereIn('id', function (Subquery $query) {
         $query->select(['id'])
             ->from('users')
-            ->whereGreatherThanOrEqual('created_at', date('Y-m-d'));
+            ->whereGreaterThanOrEqual('created_at', date('Y-m-d'));
     })->get();
 ```
 
@@ -327,7 +327,7 @@ Methods corresponding to the `OR` operator: `orWhereExists`, `orWhereNotExists`.
 
 ### Where dates
 
-You can consult records by dates, and date and time, the available methods are: `whereDateEqual`, `whereDateEqual`, `whereDateGreatherThan`, `whereDateGreatherThanOrEqual`, `whereDateLessThan`, `whereDateLessThanOrEqual`.
+You can consult records by dates, and date and time, the available methods are: `whereDateEqual`, `whereDateEqual`, `whereDateGreaterThan`, `whereDateGreaterThanOrEqual`, `whereDateLessThan`, `whereDateLessThanOrEqual`.
 
 ```php
 $users = DB::table('users')
@@ -335,23 +335,23 @@ $users = DB::table('users')
     ->get();
 ```
 
-Methods corresponding to the `OR` operator: `orWhereDateEqual`,`orWhereDateGreatherThan`,`orWhereDateGreatherThanOrEqual`,`orWhereDateLessThan`,`orWhereDateLessThanOrEqual`.
+Methods corresponding to the `OR` operator: `orWhereDateEqual`,`orWhereDateGreaterThan`,`orWhereDateGreaterThanOrEqual`,`orWhereDateLessThan`,`orWhereDateLessThanOrEqual`.
 
 #### Months
 
 Methods available to work with months:
 
-`whereMonthEqual`, `whereMonthEqual`, `whereMonthGreatherThan`, `whereMonthGreatherThanOrEqual`, `whereMonthLessThan`, `whereMonthLessThanOrEqual`, `orWhereMonthEqual`, `orWhereMonthEqual`, `orWhereMonthGreatherThan`, `orWhereMonthGreatherThanOrEqual`, `orWhereMonthLessThan`, `orWhereMonthLessThanOrEqual`.
+`whereMonthEqual`, `whereMonthEqual`, `whereMonthGreaterThan`, `whereMonthGreaterThanOrEqual`, `whereMonthLessThan`, `whereMonthLessThanOrEqual`, `orWhereMonthEqual`, `orWhereMonthEqual`, `orWhereMonthGreaterThan`, `orWhereMonthGreaterThanOrEqual`, `orWhereMonthLessThan`, `orWhereMonthLessThanOrEqual`.
 
 #### Years
 
 Methods available to work with years:
 
-`whereYearEqual`, `whereYearEqual`, `whereYearGreatherThan`, `whereYearGreatherThanOrEqual`, `whereYearLessThan`, `whereYearLessThanOrEqual`, `orWhereYearEqual`, `orWhereYearEqual`, `orWhereYearGreatherThan`, `orWhereYearGreatherThanOrEqual`, `orWhereYearLessThan`, `orWhereYearLessThanOrEqual`.
+`whereYearEqual`, `whereYearEqual`, `whereYearGreaterThan`, `whereYearGreaterThanOrEqual`, `whereYearLessThan`, `whereYearLessThanOrEqual`, `orWhereYearEqual`, `orWhereYearEqual`, `orWhereYearGreaterThan`, `orWhereYearGreaterThanOrEqual`, `orWhereYearLessThan`, `orWhereYearLessThanOrEqual`.
 
 ### Where rows
 
-You can query records by comparing table columns using some of the following methods: `whereRowEqual`, `whereRowDistinct`, `whereRowGreatherThan`, `whereRowGreatherThanOrEqual`, `whereRowLessThan`, `whereRowLessThanOrEqual`, `whereRowIn`, `whereRowNotIn`.
+You can query records by comparing table columns using some of the following methods: `whereRowEqual`, `whereRowDistinct`, `whereRowGreaterThan`, `whereRowGreaterThanOrEqual`, `whereRowLessThan`, `whereRowLessThanOrEqual`, `whereRowIn`, `whereRowNotIn`.
 
 ```php
 $users = DB::table('employees')
@@ -462,8 +462,8 @@ $users = DB::select([
     })
     ->groupBy('products.category_id')
     ->having(function (Having $having): void {
-        $having->whereGreatherThan('identifiers', 5)
-            ->whereGreatherThan('products.category_id', 10);
+        $having->whereGreaterThan('identifiers', 5)
+            ->whereGreaterThan('products.category_id', 10);
     })
     ->get();
 ```
