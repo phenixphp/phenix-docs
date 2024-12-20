@@ -152,17 +152,23 @@ public function store(StoreUserRequest $request): Response
 
 Below is a list of available validation data types and their function:
 
-- [Str](#str-class)
-- [Arr](#arr-class)
-- [Collection](#collection-class)
-- [Dictionary](#dictionary-class)
-- [Boolean](#boolean-class)
-- [Date](#date-class)
-- [Email](#email-class)
+- [Str](#str)
+- [Arr](#arr)
+- [Collection](#collection)
+- [Dictionary](#dictionary)
+- [Boolean](#boolean)
+- [Date](#date)
+- [Email](#email)
+- [File](#file)
+- [Floating](#floating)
+- [Integer](#integer)
+- [Numeric](#numeric)
+- [Uid](#uid)
+- [Url](#url)
 
-### Str class
+### Str
 
-The `Str` extends `QueryableScalar`, which in turn extends `Scalar` and `Type`. Each method in the `Str` class represents a rule that can be applied to validate string data.
+The `Str` type extends `QueryableScalar`, which in turn extends `Scalar` and `Type`. Each method in the `Str` class represents a rule that can be applied to validate string data.
 
 To use the `Str` class for validation, you can create an instance and apply the desired validation rules. Here is an example:
 
@@ -201,9 +207,9 @@ $validator->setData([
 - `exists(string $table, string|null $column = null, Closure|null $query = null): self`
 - `unique(string $table, string|null $column = null, Closure|null $query = null): self`
 
-### Arr class
+### Arr
 
-The `Arr` class allows you to define and validate arrays with specific structures and rules.
+The `Arr` type allows you to define and validate arrays with specific structures and rules.
 
 ```php
 use Phenix\Validation\Validator;
@@ -240,9 +246,9 @@ $validator->setData([
 - `max(int $limit): self`
 - `size(int $limit): self`
 
-### Collection class
+### Collection
 
-The `Collection` class allows you to define and validate collections of items, ensuring that each item in the collection meets the specified criteria. This class extends `DefinableArrType`, inheriting its functionality and providing specific rules for collection validation.
+The `Collection` type allows you to define and validate collections of items, ensuring that each item in the collection meets the specified criteria. This class extends `DefinableArrType`, inheriting its functionality and providing specific rules for collection validation.
 
 ```php
 use Phenix\Validation\Validator;
@@ -279,9 +285,9 @@ $validator->setData([
 - `max(int $limit): self`
 - `size(int $limit): self`
 
-### Dictionary class
+### Dictionary
 
-The `Dictionary` class allows you to define and validate dictionaries (associative arrays):
+The `Dictionary` type allows you to define and validate dictionaries (associative arrays):
 
 ```php
 use Phenix\Validation\Validator;
@@ -317,9 +323,9 @@ $validator->setData([
 - `max(int $limit): self`
 - `size(int $limit): self`
 
-### Boolean class
+### Boolean
 
-The `Boolean` class allows you to validate boolean values, ensuring that the data being processed in your application is either `true` or `false`. This class extends `Scalar`, inheriting its functionality and providing a specific rule for boolean validation.
+The `Boolean` type allows you to validate boolean values, ensuring that the data being processed in your application is either `true` or `false`. This class extends `Scalar`, inheriting its functionality and providing a specific rule for boolean validation.
 
 ```php
 use Phenix\Validation\Validator;
@@ -344,9 +350,9 @@ $validator->setData([
 - `optional(): static`
 - `nullable(): static`
 
-### Date class
+### Date
 
-The `Date` class allows you to validate date values, ensuring that the data being processed in your application meets specific date-related criteria. This class extends `Str`, inheriting its functionality and providing additional rules for date validation.
+The `Date` type allows you to validate date values, ensuring that the data being processed in your application meets specific date-related criteria. This class extends `Str`, inheriting its functionality and providing additional rules for date validation.
 
 ```php
 use Phenix\Validation\Validator;
@@ -377,10 +383,12 @@ $validator->setData([
 - `before(DateTimeInterface|string $date): self`
 - `beforeOrEqual(DateTimeInterface|string $date): self`
 - `format(string $format): self`
+- `exists(string $table, string|null $column = null, Closure|null $query = null): self`
+- `unique(string $table, string|null $column = null, Closure|null $query = null): self`
 
-### Email class
+### Email
 
-The `Email` class allows you to validate email addresses. This class extends `Str`, inheriting its functionality and providing additional rules for email validation. Internally it uses the `egulias/EmailValidator` package to perform email validation.
+The `Email` type allows you to validate email addresses. This class extends `Str`, inheriting its functionality and providing additional rules for email validation. Internally it uses the `egulias/EmailValidator` package to perform email validation.
 
 ```php
 use Phenix\Validation\Validator;
@@ -421,3 +429,208 @@ $validator->setRules([
 - `optional(): static`,
 - `nullable(): static`,
 - `validations(EmailValidation ...$emailValidations): self`
+- `exists(string $table, string|null $column = null, Closure|null $query = null): self`
+- `unique(string $table, string|null $column = null, Closure|null $query = null): self`
+
+### File
+
+The `File` type allows you to validate file uploads, ensuring that the files being processed in your application meet specific criteria such as size and MIME type.
+
+```php
+use Phenix\Validation\Validator;
+use Phenix\Validation\Types\File;
+
+$validator = new Validator();
+
+$validator->setRules([
+    'profile_picture' => File::required()->mimes(['image/png'])->max(2048),
+]);
+
+$validator->setData([
+    'profile_picture' => new BufferedFile(
+        'user.png',
+        file_get_contents('/path/to/picture.png'),
+        'image/png',
+        [['Content-Type', 'image/png']]
+    ),
+]);
+
+// Handle valid data
+```
+
+#### File methods
+
+- `required(): static`
+- `optional(): static`
+- `nullable(): static`
+- `min(float|int $limit): static`
+- `max(float|int $limit): static`
+- `size(float|int $limit): static`
+- `mimes(array $types): static`
+
+### Floating
+
+The `Floating` type allows you to validate floating-point numbers.
+
+```php
+use Phenix\Validation\Validator;
+use Phenix\Validation\Types\Floating;
+
+$validator = new Validator();
+
+$validator->setRules([
+    'price' => Floating::required()->min(0.0)->max(100.0),
+]);
+
+$validator->setData([
+    'price' => 49.99,
+]);
+
+// Handle valid data
+```
+
+#### Floating methods
+
+- `required(): static`
+- `optional(): static`
+- `nullable(): static`
+- `min(float $limit): self`
+- `max(float $limit): self`
+- `between(float $min, float $max): self`
+- `in(array $values): self`
+- `notIn(array $values): self`
+- `digits(int $length): self`
+- `decimals(int $length): self`
+- `digitsBetween(int $min, int $max): self`
+- `decimalsBetween(int $min, int $max): self`
+
+### Integer
+
+The `Integer` type allows you to validate integer values.
+
+```php
+use Phenix\Validation\Validator;
+use Phenix\Validation\Types\Integer;
+
+$validator = new Validator();
+
+$validator->setRules([
+    'age' => Integer::required()->min(18)->max(65),
+]);
+
+$validator->setData([
+    'age' => 30,
+]);
+
+// Handle valid data
+```
+
+#### Integer methods
+
+- `required(): static`
+- `optional(): static`
+- `nullable(): static`
+- `min(int $limit): self`
+- `max(int $limit): self`
+- `between(int $min, int $max): self`
+- `in(array $values): self`
+- `notIn(array $values): self`
+- `digits(int $length): self`
+- `digitsBetween(int $min, int $max): self`
+- `exists(string $table, string|null $column = null, Closure|null $query = null): self`
+- `unique(string $table, string|null $column = null, Closure|null $query = null): self`
+
+### Numeric
+
+The `Numeric` type allows you to validate numeric values.
+
+```php
+use Phenix\Validation\Validator;
+use Phenix\Validation\Types\Numeric;
+
+$validator = new Validator();
+
+$validator->setRules([
+    'score' => Numeric::required()->digits(3),
+]);
+
+$validator->setData([
+    'score' => 123,
+]);
+
+// Handle valid data
+```
+
+#### Numeric methods
+
+- `required(): static`
+- `optional(): static`
+- `nullable(): static`
+- `digits(int $value): self`
+- `digitsBetween(int $min, int $max): self`
+- `in(array $values): self`
+- `notIn(array $values): self`
+- `exists(string $table, string|null $column = null, Closure|null $query = null): self`
+- `unique(string $table, string|null $column = null, Closure|null $query = null): self`
+
+### Uid
+
+The `Uid` type allows you to validate unique identifiers such as UUIDs and ULIDs. This class extends `Str`, inheriting its functionality and providing additional rules for UID validation.
+
+```php
+use Phenix\Validation\Validator;
+use Phenix\Validation\Types\Uid;
+
+$validator = new Validator();
+
+$validator->setRules([
+    'identifier' => Uid::required()->uuid(),
+]);
+
+$validator->setData([
+    'identifier' => '550e8400-e29b-41d4-a716-446655440000',
+]);
+
+// Handle valid data
+```
+
+### Uid methods
+
+- `required(): static`
+- `optional(): static`
+- `nullable(): static`
+- `uuid(): self`
+- `ulid(): self`
+- `exists(string $table, string|null $column = null, Closure|null $query = null): self`
+- `unique(string $table, string|null $column = null, Closure|null $query = null): self`
+
+### Url
+
+The `Url` type allows you to validate URL values. This class extends `Str`, inheriting its functionality and providing additional rules for URL validation.
+
+```php
+use Phenix\Validation\Validator;
+use Phenix\Validation\Types\Url;
+
+$validator = new Validator();
+
+$validator->setRules([
+    'website' => Url::required(),
+]);
+
+$validator->setData([
+    'website' => 'http://php.net',
+]);
+
+// Handle valid data
+```
+
+### Url methods
+
+- `required(): static`
+- `optional(): static`
+- `nullable(): static`
+- `exists(string $table, string|null $column = null, Closure|null $query = null): self`
+- `unique(string $table, string|null $column = null, Closure|null $query = null): self`
+
+
