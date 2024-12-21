@@ -51,7 +51,7 @@ class UserController
 
         $validator->setData($request->toArray());
 
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json([
                 'errors' => $validator->failing()
             ], HttpStatus::UNPROCESSABLE_ENTITY);
@@ -150,7 +150,7 @@ public function store(StoreUserRequest $request): Response
 
 ## Available validation types
 
-Below is a list of available validation data types and their function:
+Below is a list of available validation data types and their functions:
 
 - [Str](#str)
 - [Arr](#arr)
@@ -425,9 +425,9 @@ $validator->setRules([
 
 #### Email methods
 
-- `required(): static`,
-- `optional(): static`,
-- `nullable(): static`,
+- `required(): static`
+- `optional(): static`
+- `nullable(): static`
 - `validations(EmailValidation ...$emailValidations): self`
 - `exists(string $table, string|null $column = null, Closure|null $query = null): self`
 - `unique(string $table, string|null $column = null, Closure|null $query = null): self`
