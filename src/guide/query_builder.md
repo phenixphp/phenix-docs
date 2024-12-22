@@ -2,9 +2,9 @@
 
 A query builder is a programming interface or library that allows developers to build and manipulate database queries using a fluent and programmatic syntax rather than writing raw SQL statements. It provides a more intuitive and structured way to construct database queries in a language-specific manner, making it easier to work with databases in applications.
 
-## Running queries
+## Running Queries
 
-Phenix has provided a facade called `Phenix\Facades\DB`, which provides utility methods for constructing database queries.
+Phenix provides a facade called `Phenix\Facades\DB`, which offers utility methods for constructing database queries.
 
 ```php
 <?php
@@ -30,9 +30,9 @@ class UserController extends Controller
 
 The `get` method returns a `Phenix\Data\Collection` instance containing a list of associative arrays.
 
-## Select queries
+## Select Queries
 
-### Query single row
+### Query Single Row
 
 You can retrieve a specific record from the database using the `first` method, which will return an associative array if a match is found.
 
@@ -46,7 +46,7 @@ echo $user['name'] . PHP_EOL;
 
 ### Pagination
 
-Database pagination allows to web applications to split a large dataset into smaller, more manageable chunks or pages for display to users. It enables efficient navigation through a potentially extensive set of database records. Instead of loading all records at once, pagination retrieves and displays a portion of the data, typically a fixed number of records per page.
+Database pagination allows web applications to split a large dataset into smaller, more manageable chunks or pages for display to users. It enables efficient navigation through a potentially extensive set of database records. Instead of loading all records at once, pagination retrieves and displays a portion of the data, typically a fixed number of records per page.
 
 ```php
 use Amp\Http\Server\Request;
@@ -61,7 +61,7 @@ public function index(Request $request): Response
 }
 ```
 
-The paginate method receives an `League\Uri\Http` instance of the `Amp\Http\Server\Request` class, which contains the query strings and the path of the URL, the pagination structure is as follows:
+The `paginate` method receives a `League\Uri\Http` instance of the `Amp\Http\Server\Request` class, which contains the query strings and the path of the URL. The pagination structure is as follows:
 
 ```json
 {
@@ -99,9 +99,9 @@ The paginate method receives an `League\Uri\Http` instance of the `Amp\Http\Serv
 }
 ```
 
-### Select statements
+### Select Statements
 
-By default, queries are generated using the asterisk (*) placeholder, you can specify the columns to select using the `select` method:
+By default, queries are generated using the asterisk (*) placeholder. You can specify the columns to select using the `select` method:
 
 ```php
 use Phenix\Facades\DB;
@@ -113,7 +113,7 @@ foreach ($users as $user) {
 }
 ```
 
-### Functions in select statement
+### Functions in Select Statement
 
 You can use SQL functions in the `select` method:
 
@@ -129,7 +129,7 @@ echo $product['average_price'] . PHP_EOL;
 
 The available methods of the `Phenix\Database\Functions` class are: `avg`, `sum`, `min`, `max`, `count`, `date`, `month`, `year`, `case`.
 
-#### Case function
+#### Case Function
 
 Case is an important utility for obtaining values under conditions:
 
@@ -147,10 +147,10 @@ $products = DB::select([
         $case,
     ])
     ->from('products')
-    ->get()
+    ->get();
 ```
 
-### Select from subquery
+### Select from Subquery
 
 You can select fields from a subquery:
 
@@ -165,7 +165,7 @@ $users = DB::select(['id', 'name', 'email'])
     })->get();
 ```
 
-### Select subquery as column
+### Select Subquery as Column
 
 You can create a subquery and select it as a column in the main query:
 
@@ -185,7 +185,7 @@ $user = DB::select([
     ->get();
 ```
 
-### Column alias
+### Column Alias
 
 You can assign aliases to selected columns:
 
@@ -197,12 +197,12 @@ $users = DB::select([
         Alias::of('name')->as('full_name'),
     ])
     ->from('users')
-    ->get()
+    ->get();
 ```
 
-## Count records
+## Count Records
 
-The `count` method allows you to count the records in a table, you can apply clauses to adjust the row count or indicate a column to count.
+The `count` method allows you to count the records in a table. You can apply clauses to adjust the row count or indicate a column to count.
 
 ```php
 $count = DB::from('products')->count();
@@ -210,7 +210,7 @@ $count = DB::from('products')->count();
 $count = DB::from('products')->whereGreaterThan('price', 100)->count();
 ```
 
-## Exists sentence
+## Exists Clause
 
 To check the existence of a record in the database, you can use the `exists` and `doesntExist` methods:
 
@@ -220,9 +220,9 @@ $exists = DB::from('products')->whereEqual('id', 1)->exists();
 $doesntExist = DB::from('products')->whereEqual('id', 1)->doesntExist();
 ```
 
-## Where clauses
+## Where Clauses
 
-The where clauses are used to filter the results of a query. It allows you to specify conditions that the results must meet in order to be returned.
+The where clauses are used to filter the results of a query. They allow you to specify conditions that the results must meet in order to be returned.
 
 ```php
 $users = DB::from('users')->whereDistinct('id', 1)->get();
@@ -230,7 +230,7 @@ $users = DB::from('users')->whereDistinct('id', 1)->get();
 
 Simple comparison methods are: `whereEqual`, `whereDistinct`, `whereGreaterThan`, `whereGreaterThanOrEqual`, `whereLessThan`, `whereLessThanOrEqual`.
 
-`ANY`, `ALL` and `SOME` clause methods: `whereAnyEqual`, `whereAnyDistinct`, `whereAnyGreaterThan`, `whereAnyGreaterThanOrEqual`, `whereAnyLessThan`, `whereAnyLessThanOrEqual`, `whereAllEqual`, `whereAllDistinct`, `whereAllGreaterThan`, `whereAllGreaterThanOrEqual`, `whereAllLessThan`, `whereAllLessThanOrEqual`, `whereSomeEqual`, `whereSomeDistinct`, `whereSomeGreaterThan`, `whereSomeGreaterThanOrEqual`, `whereSomeLessThan`, `whereSomeLessThanOrEqual`.
+`ANY`, `ALL`, and `SOME` clause methods: `whereAnyEqual`, `whereAnyDistinct`, `whereAnyGreaterThan`, `whereAnyGreaterThanOrEqual`, `whereAnyLessThan`, `whereAnyLessThanOrEqual`, `whereAllEqual`, `whereAllDistinct`, `whereAllGreaterThan`, `whereAllGreaterThanOrEqual`, `whereAllLessThan`, `whereAllLessThanOrEqual`, `whereSomeEqual`, `whereSomeDistinct`, `whereSomeGreaterThan`, `whereSomeGreaterThanOrEqual`, `whereSomeLessThan`, `whereSomeLessThanOrEqual`.
 
 You can chain conditions with the `OR` operator:
 
@@ -243,7 +243,7 @@ $users = DB::from('users')
 
 Methods corresponding to the `OR` operator: `orWhereEqual`, `orWhereDistinct`, `orWhereGreaterThan`, `orWhereGreaterThanOrEqual`, `orWhereLessThan`, `orWhereLessThanOrEqual`.
 
-### In and not in
+### In and Not In
 
 You can add a clause that matches a set of values:
 
@@ -268,7 +268,7 @@ $users = DB::table('users')
 
 Methods corresponding to the `OR` operator: `orWhereIn`, `orWhereNotIn`.
 
-### Null and not null
+### Null and Not Null
 
 You can query records when columns are null or non-null:
 
@@ -280,7 +280,7 @@ $users = DB::table('users')->whereNotNull('verified_at')->get();
 
 Methods corresponding to the `OR` operator: `orWhereNull`, `orWhereNotNull`.
 
-### Boolean columns
+### Boolean Columns
 
 You can query records by true or false columns:
 
@@ -292,7 +292,7 @@ $users = DB::table('users')->whereFalse('enabled')->get();
 
 Methods corresponding to the `OR` operator: `orWhereTrue`, `orWhereFalse`.
 
-### Between ranges
+### Between Ranges
 
 You can query records between value ranges:
 
@@ -308,7 +308,7 @@ $users = DB::table('users')
 
 Methods corresponding to the `OR` operator: `orWhereBetween`, `orWhereNotBetween`.
 
-### Where exists
+### Where Exists
 
 You can query records by adding an existence clause with a subquery using the `whereExists` and `whereNotExists` methods.
 
@@ -325,9 +325,9 @@ $users = DB::table('users')
 
 Methods corresponding to the `OR` operator: `orWhereExists`, `orWhereNotExists`.
 
-### Where dates
+### Where Dates
 
-You can consult records by dates, and date and time, the available methods are: `whereDateEqual`, `whereDateEqual`, `whereDateGreaterThan`, `whereDateGreaterThanOrEqual`, `whereDateLessThan`, `whereDateLessThanOrEqual`.
+You can query records by dates, and date and time. The available methods are: `whereDateEqual`, `whereDateGreaterThan`, `whereDateGreaterThanOrEqual`, `whereDateLessThan`, `whereDateLessThanOrEqual`.
 
 ```php
 $users = DB::table('users')
@@ -335,28 +335,28 @@ $users = DB::table('users')
     ->get();
 ```
 
-Methods corresponding to the `OR` operator: `orWhereDateEqual`,`orWhereDateGreaterThan`,`orWhereDateGreaterThanOrEqual`,`orWhereDateLessThan`,`orWhereDateLessThanOrEqual`.
+Methods corresponding to the `OR` operator: `orWhereDateEqual`, `orWhereDateGreaterThan`, `orWhereDateGreaterThanOrEqual`, `orWhereDateLessThan`, `orWhereDateLessThanOrEqual`.
 
 #### Months
 
 Methods available to work with months:
 
-`whereMonthEqual`, `whereMonthEqual`, `whereMonthGreaterThan`, `whereMonthGreaterThanOrEqual`, `whereMonthLessThan`, `whereMonthLessThanOrEqual`, `orWhereMonthEqual`, `orWhereMonthEqual`, `orWhereMonthGreaterThan`, `orWhereMonthGreaterThanOrEqual`, `orWhereMonthLessThan`, `orWhereMonthLessThanOrEqual`.
+`whereMonthEqual`, `whereMonthGreaterThan`, `whereMonthGreaterThanOrEqual`, `whereMonthLessThan`, `whereMonthLessThanOrEqual`, `orWhereMonthEqual`, `orWhereMonthGreaterThan`, `orWhereMonthGreaterThanOrEqual`, `orWhereMonthLessThan`, `orWhereMonthLessThanOrEqual`.
 
 #### Years
 
 Methods available to work with years:
 
-`whereYearEqual`, `whereYearEqual`, `whereYearGreaterThan`, `whereYearGreaterThanOrEqual`, `whereYearLessThan`, `whereYearLessThanOrEqual`, `orWhereYearEqual`, `orWhereYearEqual`, `orWhereYearGreaterThan`, `orWhereYearGreaterThanOrEqual`, `orWhereYearLessThan`, `orWhereYearLessThanOrEqual`.
+`whereYearEqual`, `whereYearGreaterThan`, `whereYearGreaterThanOrEqual`, `whereYearLessThan`, `whereYearLessThanOrEqual`, `orWhereYearEqual`, `orWhereYearGreaterThan`, `orWhereYearGreaterThanOrEqual`, `orWhereYearLessThan`, `orWhereYearLessThanOrEqual`.
 
-### Where rows
+### Where Rows
 
 You can query records by comparing table columns using some of the following methods: `whereRowEqual`, `whereRowDistinct`, `whereRowGreaterThan`, `whereRowGreaterThanOrEqual`, `whereRowLessThan`, `whereRowLessThanOrEqual`, `whereRowIn`, `whereRowNotIn`.
 
 ```php
 $users = DB::table('employees')
     ->whereRowEqual(['manager_id', 'department_id'], function (Subquery $subquery) {
-        $subquery->select(['id, department_id'])
+        $subquery->select(['id', 'department_id'])
             ->from('managers')
             ->whereEqual('location_id', 1);
     })
@@ -364,7 +364,7 @@ $users = DB::table('employees')
     ->get();
 ```
 
-## Limit query
+## Limit Query
 
 You can generate queries to limit the number of rows to obtain.
 
@@ -375,19 +375,21 @@ $users = DB::table('users')
     ->get();
 ```
 
-## Ordering rows
+## Ordering Rows
 
-You can order the result of the query using the `orderBy` method, the first argument is the column by which the sorting will be done, the second argument indicates the direction using the `Phenix\Database\Constants\Order` enumeration.
+You can order the result of the query using the `orderBy` method. The first argument is the column by which the sorting will be done, and the second argument indicates the direction using the `Phenix\Database\Constants\Order` enumeration.
 
 ```php
+use Phenix\Database\Constants\Order;
+
 $users = DB::table('users')
     ->orderBy('id', Order::DESC)
     ->get();
 ```
 
-## Grouping columns
+## Grouping Columns
 
-The `groupBy` method allows to group rows in a table based on the values in one or more columns. It is often used with aggregate functions such as `COUNT`, `SUM`, `AVG`, `MAX` and `MIN` to summarize the data in each group. This method accepts arguments of type `string`, `array` or `Phenix\Database\Functions`.
+The `groupBy` method allows grouping rows in a table based on the values in one or more columns. It is often used with aggregate functions such as `COUNT`, `SUM`, `AVG`, `MAX`, and `MIN` to summarize the data in each group. This method accepts arguments of type `string`, `array`, or `Phenix\Database\Functions`.
 
 ```php
 use Phenix\Database\Join;
@@ -408,7 +410,7 @@ $users = DB::select([
 
 ## Joins
 
-Joins clauses are used to combine rows from two or more tables based on a common field between them. Joins are one of the most powerful features and they can be used to create complex queries that would not be possible otherwise. Supported join methods are: `innerJoin`, `leftJoin`, `leftOuterJoin`, `rightJoin`, `rightOuterJoin`, `crossJoin`.
+Join clauses are used to combine rows from two or more tables based on a common field between them. Joins are one of the most powerful features and can be used to create complex queries that would not be possible otherwise. Supported join methods are: `innerJoin`, `leftJoin`, `leftOuterJoin`, `rightJoin`, `rightOuterJoin`, `crossJoin`.
 
 ```php
 use Phenix\Database\Join;
@@ -442,7 +444,7 @@ $users = DB::select([
     ->get();
 ```
 
-## Having clause
+## Having Clause
 
 The `HAVING` clause is used to filter rows in the result set of a query that has been grouped using the `GROUP BY` clause. While the `WHERE` clause filters individual rows before they are grouped, the `HAVING` clause filters the grouped rows based on specified conditions. It is typically used in conjunction with aggregate functions like `SUM`, `COUNT`, `AVG`, etc., to filter and retrieve summary data that meets specific criteria. The `HAVING` clause allows you to apply conditions to the grouped data, helping to refine query results and perform operations on aggregated values, making it a valuable tool for data analysis and reporting.
 
@@ -470,9 +472,9 @@ $users = DB::select([
 
 The `Phenix\Database\Having` class extends from `Phenix\Database\Clause`, therefore it has all the **where** methods seen previously.
 
-## Insert statement
+## Insert Statement
 
-The `insert` method allows you to create new records in the database, you can insert one or many records.
+The `insert` method allows you to create new records in the database. You can insert one or many records.
 
 ```php
 DB::table('users')
@@ -496,19 +498,19 @@ DB::table('users')
 
 The following methods will be implemented soon: `insertOrIgnore`, `upsert`, `insertFrom`.
 
-## Update records
+## Update Records
 
 To update existing records in the database, you can use the `update` method.
 
 ```php
 DB::table('users')
     ->whereEqual('id', 1)
-    ->update(['name' => 'John Edison Doe'])
+    ->update(['name' => 'John Edison Doe']);
 ```
 
-## Delete records
+## Delete Records
 
-Finally, to delete records from the database you can use the `delete` method. Remember to add clauses when deleting records.
+Finally, to delete records from the database, you can use the `delete` method. Remember to add clauses when deleting records.
 
 ```php
 DB::table('users')->whereEqual('id', 1)->delete();

@@ -5,11 +5,11 @@
 - php:^8.1
 - ext-pcntl
 
-Typically the PCNTL extension is part of the default PHP installation, you can check if the extension is active with the `php -m` command, if it is not listed you must activate it.
+Typically, the PCNTL extension is part of the default PHP installation. You can check if the extension is active with the `php -m` command. If it is not listed, you must activate it.
 
 ## Composer installation
 
-You must have [Composer](https://getcomposer.org/) installed on your computer; To create your first Phenix project, you can run Composer's **create-project** command.
+You must have [Composer](https://getcomposer.org/) installed on your computer. To create your first Phenix project, you can run Composer's **create-project** command.
 
 ```
 composer create-project phenixphp/phenix phenix

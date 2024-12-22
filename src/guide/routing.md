@@ -10,7 +10,7 @@ Route::get('/greetings', function () {
 });
 ```
 
-You can define your routes in the `routes/api.php` file. The routes are loaded through the `RouteServiceProvider` service provider, in the configuration file `config/app.php`, you can see the provider being referenced.
+You can define your routes in the `routes/api.php` file. The routes are loaded through the `RouteServiceProvider` service provider. In the configuration file `config/app.php`, you can see the provider being referenced.
 
 ## Available methods
 
@@ -39,7 +39,7 @@ Route::get('/users', function (Request $request) {
 
 ## Route parameters
 
-You can pass parameters in routes, such as: IDs of records in the database. The parameters are not injected into the callback but are contained in the `Request` object. The [amphp/http-server-router](https://amphp.org/http-server-router) package is based on the [nikic/FastRoute](https://github.com/nikic/FastRoute) package:
+You can pass parameters in routes, such as IDs of records in the database. The parameters are not injected into the callback but are contained in the `Request` object. The [amphp/http-server-router](https://amphp.org/http-server-router) package is based on the [nikic/FastRoute](https://github.com/nikic/FastRoute) package:
 
 ```php
 use Phenix\Http\Attributes;
@@ -80,7 +80,7 @@ Route::get('/users/{user:\d+}', function (Request $request) {
 
 ## Named routes
 
-Route names will allow Phenix to generate URLs easily, you can assign each route a name:
+Route names will allow Phenix to generate URLs easily. You can assign each route a name:
 
 ```php
 Route::get('/users', function (Request $request) {
@@ -96,7 +96,7 @@ Route::get('/users/{user}', function (Request $request) {
 
 ## Route groups
 
-Route groups allow sharing middlewares, assigning route prefixes and route name prefixes. You can create nested route groups and share their properties in the hierarchy in which the routes are defined.
+Route groups allow sharing middlewares, assigning route prefixes, and route name prefixes. You can create nested route groups and share their properties in the hierarchy in which the routes are defined.
 
 ```php
 use Phenix\Http\Middlewares\AcceptJsonResponses;
@@ -129,7 +129,7 @@ Route::middleware(AcceptJsonResponses::class)
 
 ## Route middlewares
 
-Middleware allows you to alter the flow of a request, perform validations, return responses, all using the chain of responsibility design pattern. You can assign one or many middlewares to your routes.
+Middleware allows you to alter the flow of a request, perform validations, and return responses, all using the chain of responsibility design pattern. You can assign one or many middlewares to your routes.
 
 ```php
 Route::get('/users/{user}', function (Request $request) {

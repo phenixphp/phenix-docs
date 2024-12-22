@@ -10,7 +10,7 @@ To create a service provider, you can run the following Phenix command:
 php phenix make:provider SlackServiceProvider
 ```
 
-In the `register` method, you can bind services to the container. This means that you are telling to the container to create an instance of the service and store it. The `provides` method allows the container to know ahead of time what a service provider provides, allowing for lazy loading. Finally, the `boot` method tells the container the services that should be preloaded when the application starts.
+In the `register` method, you can bind services to the container. This means that you are telling the container to create an instance of the service and store it. The `provides` method allows the container to know ahead of time what a service provider provides, allowing for lazy loading. Finally, the `boot` method tells the container the services that should be preloaded when the application starts.
 
 ```php
 <?php
@@ -79,7 +79,7 @@ public function register(): void
 }
 ```
 
-The `bind` method accepts two arguments, the first argument is the service identifier, the second argument can be the namespace of the concrete class or an anonymous function that will resolve the service. The identifier can be any text string. If the second argument is not passed to the method, an attempt will be made to resolve the identifier.
+The `bind` method accepts two arguments. The first argument is the service identifier, and the second argument can be the namespace of the concrete class or an anonymous function that will resolve the service. The identifier can be any text string. If the second argument is not passed to the method, an attempt will be made to resolve the identifier.
 
 ## Booting services
 
@@ -138,7 +138,7 @@ public function register(): void
 
 ## Resolve from container
 
-The `make` method allows to obtain objects from the container in a simple way.
+The `make` method allows obtaining objects from the container in a simple way.
 
 ```php
 use Phenix\App;

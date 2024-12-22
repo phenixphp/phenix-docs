@@ -1,10 +1,10 @@
 # Getting started
 
-The best way to learn is by practicing, let's create a basic CRUD using the query builder:
+The best way to learn is by practicing. Let's create a basic CRUD using the query builder:
 
 ## Create project
 
-This guide assumes that you are using [Visual Studio](https://code.visualstudio.com/) Code as your text editor and Ubuntu as your operating system. If you are a Windows user, it is recommended to use Ubuntu with WSL.
+This guide assumes that you are using [Visual Studio Code](https://code.visualstudio.com/) as your text editor and Ubuntu as your operating system. If you are a Windows user, it is recommended to use Ubuntu with WSL.
 
 ```
 composer create-project phenixphp/phenix phenix
@@ -16,7 +16,7 @@ cd phenix
 code .
 ```
 
-Edit the database configuration variables to establish a connection in the **.env** file, the default database connection is **mysql**.
+Edit the database configuration variables to establish a connection in the **.env** file. The default database connection is **mysql**.
 
 ```
 DB_CONNECTION=mysql
@@ -26,19 +26,20 @@ DB_PASSWORD=secret
 ```
 
 ## Create migration
+
 Open a new terminal using the shortcut **Ctrl + \`**, and run a Phenix command.
 
 ```
 php phenix make:migration CreateUsersTable
 ```
 
-The command will create a migration on the following path:
+The command will create a migration at the following path:
 
 ```
 database/migrations/20230930111521_create_users_table.php
 ```
 
-Copy and paste the user table structure, it should look like this:
+Copy and paste the user table structure. It should look like this:
 
 ```php
 <?php
@@ -94,7 +95,7 @@ We need some users created in the database. The command to create the seeder is 
 php phenix make:seeder UsersSeeder
 ```
 
-Copy the seeder code, it should look like this:
+Copy the seeder code. It should look like this:
 
 ```php
 <?php
@@ -111,12 +112,12 @@ class UsersSeeder extends Seed
 
         $users->insert([
             [
-                'name'=> 'Rasmus Ledford',
-                'email'=> 'rasmus.ledford@php.net',
+                'name' => 'Rasmus Ledford',
+                'email' => 'rasmus.ledford@php.net',
             ],
             [
-                'name'=> 'Nikita Popov',
-                'email'=> 'nikita.popov@php.net',
+                'name' => 'Nikita Popov',
+                'email' => 'nikita.popov@php.net',
             ],
         ])->saveData();
     }
@@ -153,7 +154,7 @@ Now let's create the user controller to create the CRUD:
 php phenix make:controller UserController -a
 ```
 
-The controller will have following content:
+The controller will have the following content:
 
 ```php
 <?php
@@ -198,7 +199,7 @@ class UserController extends Controller
 
 ### The index method
 
-This method allows us to obtain all the users created in the database, at this point we have two options: the query brings all the data, or the most optimal and common, paginate the records.  The first step will be to register the user index route in the `routes/api.php` file:
+This method allows us to obtain all the users created in the database. At this point, we have two options: the query brings all the data, or the most optimal and common, paginate the records. The first step will be to register the user index route in the `routes/api.php` file:
 
 ```php
 use App\Http\Controllers\UserController;
@@ -209,9 +210,9 @@ use Phenix\Facades\Route;
 Route::get('/users', [UserController::class, 'index']);
 ```
 
-If you see any similarity with Laravel routes, it's not a coincidence, the elegant syntax inspires us all.
+If you see any similarity with Laravel routes, it's not a coincidence; the elegant syntax inspires us all.
 
-Now let's add code to the index method, the code should look like this:
+Now let's add code to the index method. The code should look like this:
 
 ```php
 public function index(Request $request): Response
@@ -222,7 +223,7 @@ public function index(Request $request): Response
 }
 ```
 
-The first thing to mention is that we inject the **request** into the index method, so the paginator has access to the URL variables to establish which page will be queried and if there are query parameters they will be loaded to the URLs that are generated in the response. To get all the data in the users table just use the `get` method instead `paginate` method.
+The first thing to mention is that we inject the **request** into the index method, so the paginator has access to the URL variables to establish which page will be queried, and if there are query parameters, they will be loaded to the URLs that are generated in the response. To get all the data in the users table, just use the `get` method instead of the `paginate` method.
 
 Open the terminal using the shortcut **Ctrl + Shift + \`**, and run the server.
 
@@ -230,7 +231,7 @@ Open the terminal using the shortcut **Ctrl + Shift + \`**, and run the server.
 php public/index.php
 ```
 
-At this point, you can use a client like **Postman** or **Thunder** integrated as a VS Code extension, and send a request to the URL `http://127.0.0.1:1337/users`, the server response should look like the following:
+At this point, you can use a client like **Postman** or **Thunder** integrated as a VS Code extension, and send a request to the URL `http://127.0.0.1:1337/users`. The server response should look like the following:
 
 ```json
 {
@@ -270,13 +271,13 @@ At this point, you can use a client like **Postman** or **Thunder** integrated a
 
 ### The store method
 
-The store method will allow us to add new users, let's write the code. Corresponding route:
+The store method will allow us to add new users. Let's write the code. Corresponding route:
 
 ```php
 Route::post('/users', [UserController::class, 'store']);
 ```
 
-Because we are using the query builder, first the insertion is executed and then a query to obtain the inserted record, in later versions the last inserted ID will be obtained, additionally with the use of models this process is totally transparent, the code will be very simple and powerful.
+Because we are using the query builder, first the insertion is executed and then a query to obtain the inserted record. In later versions, the last inserted ID will be obtained. Additionally, with the use of models, this process is totally transparent; the code will be very simple and powerful.
 
 ```php
 public function store(Request $request): Response
@@ -299,7 +300,7 @@ Because the routes are loaded at server startup time, it is necessary to restart
 php public/index.php
 ```
 
-Again use your favorite client and send the necessary data to create a user, the response will contain the data of the new record:
+Again, use your favorite client and send the necessary data to create a user. The response will contain the data of the new record:
 
 ```json
 {
@@ -327,7 +328,7 @@ Route::get('/users/{user}', [UserController::class, 'show']);
 ```php
 use Phenix\Http\Attributes;
 
-...
+// ...
 
 public function show(Request $request): Response
 {
@@ -364,7 +365,6 @@ Route::patch('/users/{user}', [UserController::class, 'update']);
 We will only update the **name** for practical purposes.
 
 ```php
-
 public function update(Request $request): Response
 {
     $attributes = Attributes::fromRequest($request);
@@ -381,6 +381,7 @@ public function update(Request $request): Response
     return response()->json($user, HttpStatus::OK);
 }
 ```
+
 The client will respond to us with updated data:
 
 ```json
@@ -416,7 +417,7 @@ public function delete(Request $request): Response
 }
 ```
 
-We have completed this short quick start guide to show fundamental concepts of the framework: routes and controllers, requests, run server. In the following sections, concepts about the architecture of the framework and its characteristics will be deepened.
+We have completed this short quick start guide to show fundamental concepts of the framework: routes and controllers, requests, and running the server. In the following sections, concepts about the architecture of the framework and its characteristics will be deepened.
 
 > **Important** <br>
-> If you liked Phenix, and you have seen the potential and the great opportunity we have in the PHP community, I invite you to give it a star on [GitHub](https://github.com/phenixphp/phenix) and contribute to the development of this powerful framework.
+> If you liked Phenix and you have seen the potential and the great opportunity we have in the PHP community, I invite you to give it a star on [GitHub](https://github.com/phenixphp/phenix) and contribute to the development of this powerful framework.
