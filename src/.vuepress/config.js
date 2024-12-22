@@ -59,6 +59,7 @@ module.exports = {
             'migrations',
             'seeders',
             'query_builder',
+            'orm',
             'filesystem',
           ]
         }
