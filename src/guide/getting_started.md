@@ -324,7 +324,7 @@ Again, use your favorite client and send the necessary data to create a user. Th
 ```
 
 > **Note** <br>
-> Hot reloading feature will be added very soon.
+> Check [hot reloading](/guide/hot_reloading.html) feature
 
 ### The show method
 

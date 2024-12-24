@@ -51,6 +51,7 @@ module.exports = {
             '',
             'installation',
             'getting_started',
+            'hot_reloading',
             'architecture',
             'providers',
             'routing',
