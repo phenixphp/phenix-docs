@@ -3,8 +3,8 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
-- [Generating Models Classes](#generating-models-classes)
-- [Model conventions](#model-conventions)
+- [Generating Model Classes](#generating-model-classes)
+- [Model Conventions](#model-conventions)
     - [Defining Table](#defining-table)
     - [Model Properties](#model-properties)
     - [Relationships](#relationships)
@@ -18,47 +18,47 @@
 
 ## Introduction
 
-Phenix uses the Data Mapper pattern for the modeling layer, allowing a clear separation between business logic and data access logic. Models use class properties with PHP attributes to map table columns in the database to model properties, attributes also allow you to define relationships.
+Phenix uses the Data Mapper pattern for the modeling layer, allowing a clear separation between business logic and data access logic. Models use class properties with PHP attributes to map table columns in the database to model properties. Attributes also allow you to define relationships.
 
-## Generating Models Classes
+## Generating Model Classes
 
-Phenix provides a command to generate models with additional options to create controller, migration, model query builder and model collection. To create a model, you can use the following command:
+Phenix provides a command to generate models with additional options to create a controller, migration, model query builder, and model collection. To create a model, you can use the following command:
 
 ```sh
 php phenix make:model User
 ```
 
-#### Command Options
+### Command Options
 
-Create model with controller:
+Create a model with a controller:
 
 ```sh
 php phenix make:model User --controller
 php phenix make:model User -c
 ```
 
-Create model with migration:
+Create a model with a migration:
 
 ```sh
 php phenix make:model User --migration
 php phenix make:model User -m
 ```
 
-Create with custom collection:
+Create with a custom collection:
 
 ```sh
 php phenix make:model User --collection
 php phenix make:model User -cn
 ```
 
-Create with custom query builder:
+Create with a custom query builder:
 
 ```sh
 php phenix make:model User --query
 php phenix make:model User -qb
 ```
 
-Create with controller, migration, query builder and model collection:
+Create with a controller, migration, query builder, and model collection:
 
 ```sh
 php phenix make:model User --all
@@ -83,12 +83,11 @@ class User extends DatabaseModel
         //
     }
 }
-
 ```
 
-## Model conventions
+## Model Conventions
 
-### Define table
+### Defining Table
 
 When a model is created, the first thing to do is to define the database table.
 
@@ -97,7 +96,6 @@ public static function table(): string
 {
     return 'users';
 }
-
 ```
 
 ### Model Properties
@@ -154,7 +152,7 @@ public int $userId;
 public User $user;
 ```
 
-The name of the model property that was assigned as the foreign key is passed as a parameter to the `BelongsTo` attribute, in turn, the foreign key maps to the foreign key column name in the database to the `ForeignKey` attribute.
+The name of the model property that was assigned as the foreign key is passed as a parameter to the `BelongsTo` attribute. In turn, the foreign key maps to the foreign key column name in the database to the `ForeignKey` attribute.
 
 **`HasMany`**: Defines a one-to-many relationship where the model has many of another model.
 ```php
@@ -237,14 +235,14 @@ class User extends DatabaseModel
         return 'users';
     }
 }
-
 ```
 
 ## Retrieving Models
 
 The model query builder allows executing queries and mapping the results into models. If the query retrieves multiple records, they are added to a collection.
 
-### Single model
+### Single Model
+
 To query a single model, you can use the `first` method on the query builder. This method retrieves the first record that matches the query criteria and maps it to a model instance. For example, to get a user with a specific ID, you can use the `whereEqual` method to specify the condition and then call `first` to get the user model. More information can be found in the [query builder](/guide/query_builder.html) section.
 
 ```php
@@ -328,7 +326,7 @@ $user->email = 'john@example.com';
 $user->save();
 ```
 
-The `create` method in a static method used to create a new model instance with the given attributes. This method simplifies the process of instantiating a model, setting its properties, and saving it to the database in a single step.
+The `create` method is a static method used to create a new model instance with the given attributes. This method simplifies the process of instantiating a model, setting its properties, and saving it to the database in a single step.
 
 ```php
 $user = User::create([
@@ -337,6 +335,7 @@ $user = User::create([
     'created_at' => Date::now(),
 ]);
 ```
+
 ## Updating Models
 
 To update an existing model, first retrieve the model, make the necessary changes, and then call the `save` method:
