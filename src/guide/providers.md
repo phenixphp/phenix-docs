@@ -1,4 +1,12 @@
 # Service providers
+## Table of Contents
+
+- [Writing providers](#writing-providers)
+- [Register services](#register-services)
+- [Booting services](#booting-services)
+- [Shared objects](#shared-objects)
+- [Service alias](#service-alias)
+- [Resolve from container](#resolve-from-container)
 
 Service providers play a crucial role in managing and organizing application services within the IoC (Inversion of Control) container. Service providers act as bridges between the application and the container, helping to register and bind various services, dependencies, and configurations. When a service provider is registered in Phenix, it instructs the container on how to resolve and provide instances of classes or services, making it easier to manage and inject dependencies throughout the application. When Phenix bootstraps the application, it will loop through all the registered service providers and add them to the container.
 

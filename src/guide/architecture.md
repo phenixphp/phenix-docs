@@ -1,12 +1,22 @@
 # Architecture
 
+## Table of Contents
+
+- [PHP-FPM](#php-fpm)
+- [CLI SAPI](#cli-sapi)
+- [PHP is weird](#php-is-weird)
+- [Amphp Coroutine architecture](#amphp-coroutine-architecture)
+- [Request lifecycle](#request-lifecycle)
+- [Service providers](#service-providers)
+- [Routes](#routes)
+
 ## PHP-FPM
 
 There are several ways to execute a PHP script. The most popular way at the moment is PHP-FPM (FastCGI Process Manager). PHP-FPM is a server API (SAPI) for PHP that is designed to handle the execution of PHP scripts in a highly efficient manner. FPM has a main process that is responsible for receiving requests through proxied connections, for example from Nginx or Apache with the Event Multi-Processing module. This main process creates and destroys worker processes dynamically. This mechanism allows serving the traffic of a website. Each worker bootstraps the application code, then compiles it, executes it, and returns the response. FPM works very well; as developers, we don't have to worry about memory leaks. However, performance is sacrificed a little due to the bootstrapping, compilation, and execution process.
 
 On the other hand, there are flavors of PHP that allow you to keep the code in memory, such as Swoole, RoadRunner, and recently FrankenPHP. Laravel with its Octane package implements Swoole and RoadRunner. The strategy of these flavors is to reduce the loading process by keeping the code in memory, although at this point the specter of memory leaks appears.
 
-### Server API
+**Server API's**
 
 Server APIs (SAPI) are the types of interfaces between PHP and the server. SAPIs handle communication between web servers and PHP scripts. Some historically known SAPIs are: CGI, Apache (mod_php), FastCGI (PHP-FPM), Embedded, and CLI. Phenix is executed in the CLI (Command Line Interface) as a long-running process. Let's see some advantages of this SAPI.
 
@@ -44,7 +54,7 @@ class CounterController extends Controller
 
 Send requests to this controller and watch the counter increment with each request received.
 
-### Coroutine architecture
+## Amphp Coroutine Architecture
 
 Amphp uses a fiber-based coroutine architecture to implement asynchronous programming in PHP. Fibers are a lightweight alternative to threads that allow you to write concurrent and parallel code without the overhead of context switching. Amphp uses a single event loop to manage all of the fibers in an application. The event loop is responsible for scheduling fibers, handling I/O events, and managing timers. When a fiber needs to be executed, it is added to the event loop's queue. The event loop then executes the fibers one at a time, in the order that they were added to the queue.
 

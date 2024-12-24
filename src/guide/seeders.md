@@ -1,5 +1,12 @@
 # Database Seeders
 
+## Table of Contents
+
+- [Writing Seeders](#writing-seeders)
+- [Running Seeders](#running-seeders)
+    - [Table Method](#table-method)
+- [Faking Data](#faking-data)
+
 Phenix seeders are classes that enable developers to populate database tables with predefined or sample data. They are particularly useful for initializing databases with test data during development or for seeding default data into tables upon application installation. This feature helps maintain a consistent database state, simplifies testing, and streamlines the process of setting up database environments for various application scenarios. The seeders are stored in the `database/seeders` folder.
 
 ## Writing Seeders

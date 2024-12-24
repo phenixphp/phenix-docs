@@ -1,5 +1,16 @@
 # Filesystem
 
+## Table of Contents
+
+- [Read](#read)
+- [Write](#write)
+- [Exists](#exists)
+- [Checking the Type](#checking-the-type)
+    - [Directories](#directories)
+    - [Files](#files)
+- [Make Directories](#make-directories)
+- [Open Files](#open-files)
+
 Phenix provides the `Phenix\Facades\File` facade, which is based on the [File](https://amphp.org/file) package. It provides an abstraction layer and non-blocking file access solution that keeps your application responsive.
 
 ## Read

@@ -1,5 +1,16 @@
 # Getting started
 
+## Table of Contents
+- [Create project](#create-project)
+- [Create migration](#create-migration)
+- [Create user seeder](#create-user-seeder)
+- [Create controller](#create-controller)
+    - [Index](#the-index-method)
+    - [Store](#the-store-method)
+    - [Show](#the-show-method)
+    - [Update](#the-update-method)
+    - [Delete](#the-delete-method)
+
 The best way to learn is by practicing. Let's create a basic CRUD using the query builder:
 
 ## Create project

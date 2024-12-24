@@ -1,5 +1,14 @@
 # Introduction
 
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Use cases](#use-cases)
+- [Performance](#performance)
+- [The framework name](#the-framework-name)
+- [Development status](#development-status)
+- [Project objective](#project-objective)
+
 I have a dream: high-performance, highly scalable, and very fast applications written in PHP; and since there are now fibers in the core of PHP, I feel that the time is right for this dream to come true.
 
 Phenix is a web framework built on pure PHP, without external extensions, based on the [Amphp](https://amphp.org/) ecosystem, which provides non-blocking operations, asynchronism, and parallel code execution natively. It runs in the PHP SAPI CLI and on its own server; it is simply powerful.

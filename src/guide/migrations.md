@@ -1,5 +1,24 @@
 # Database Migrations
 
+## Table of Contents
+
+- [Writing Migrations](#writing-migrations)
+    - [Running Migrations](#running-migrations)
+    - [Rolling Back Migrations](#rolling-back-migrations)
+- [Tables](#tables)
+    - [Table Options](#table-options)
+    - [Checking if Table Exists](#checking-if-table-exists)
+    - [Dropping Tables](#dropping-tables)
+    - [Renaming Tables](#renaming-tables)
+- [Columns](#columns)
+    - [Column Types](#column-types)
+    - [Checking if Column Exists](#checking-if-column-exists)
+    - [Renaming a Column](#renaming-a-column)
+    - [Adding Column After Another](#adding-column-after-another)
+    - [Dropping a Column](#dropping-a-column)
+- [Indexes](#indexes)
+- [Foreign Keys](#foreign-keys)
+
 Migrations add versioning to database changes over time. The migration system implemented in Phenix is based on [Phinx](https://phinx.org/), offering simplicity and maintainability. Migrations are stored in the `database/migrations` folder and extend the `Phenix\Database\Migration` class.
 
 ## Writing Migrations

@@ -1,5 +1,27 @@
 # Validation
 
+## Table of Contents
+
+- [Introduction](#introduction)
+- [In-line validation](#in-line-validation)
+- [Form request validation](#form-request-validation)
+    - [Creating a Form Request](#creating-a-form-request)
+    - [Define validation rules](#define-validation-rules)
+- [Available validation types](#available-validation-types)
+    - [Str](#str)
+    - [Arr](#arr)
+    - [Collection](#collection)
+    - [Dictionary](#dictionary)
+    - [Boolean](#boolean)
+    - [Date](#date)
+    - [Email](#email)
+    - [File](#file)
+    - [Floating](#floating)
+    - [Integer](#integer)
+    - [Numeric](#numeric)
+    - [Uid](#uid)
+    - [Url](#url)
+
 ## Introduction
 
 The PhenixPHP framework provides a robust validation feature that allows developers to validate data based on various data types. This feature ensures that the data being processed in your application meets the required criteria, enhancing the reliability and security of your application. The validation system in PhenixPHP is designed to be flexible and easy to use, supporting a wide range of data types and validation rules.
@@ -80,7 +102,7 @@ php phenix make:request StoreUserRequest
 
 This command will create a new `StoreUserRequest` class in the `app/Http/Requests` directory.
 
-### Example of generated Form Request
+#### Example of generated Form Request
 
 ```php
 // app/Http/Requests/StoreUserRequest.php

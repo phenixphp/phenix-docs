@@ -1,5 +1,38 @@
 # Query Builder
 
+## Table of Contents
+
+- [Running Queries](#running-queries)
+- [Select Queries](#select-queries)
+    - [Query Single Row](#query-single-row)
+    - [Pagination](#pagination)
+    - [Select Statements](#select-statements)
+    - [Functions in Select Statement](#functions-in-select-statement)
+        - [Case Function](#case-function)
+    - [Select from Subquery](#select-from-subquery)
+    - [Select Subquery as Column](#select-subquery-as-column)
+    - [Column Alias](#column-alias)
+- [Count Records](#count-records)
+- [Exists Clause](#exists-clause)
+- [Where Clauses](#where-clauses)
+    - [In and Not In](#in-and-not-in)
+    - [Null and Not Null](#null-and-not-null)
+    - [Boolean Columns](#boolean-columns)
+    - [Between Ranges](#between-ranges)
+    - [Where Exists](#where-exists)
+    - [Where Dates](#where-dates)
+        - [Months](#months)
+        - [Years](#years)
+    - [Where Rows](#where-rows)
+- [Limit Query](#limit-query)
+- [Ordering Rows](#ordering-rows)
+- [Grouping Columns](#grouping-columns)
+- [Joins](#joins)
+- [Having Clause](#having-clause)
+- [Insert Statement](#insert-statement)
+- [Update Records](#update-records)
+- [Delete Records](#delete-records)
+
 A query builder is a programming interface or library that allows developers to build and manipulate database queries using a fluent and programmatic syntax rather than writing raw SQL statements. It provides a more intuitive and structured way to construct database queries in a language-specific manner, making it easier to work with databases in applications.
 
 ## Running Queries

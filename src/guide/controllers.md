@@ -1,5 +1,14 @@
 # Controllers
 
+## Table of Contents
+
+- [Writing controllers](#writing-controllers)
+    - [API Controllers](#api-controllers)
+- [Routes](#routes)
+- [Responses](#responses)
+    - [Plain responses](#plain-responses)
+    - [JSON responses](#json-responses)
+
 Routes can receive an anonymous function or callback as a request handler, but you can group handlers into classes, which constitute controllers. The controllers are stored in the `app\Http\Controllers` folder.
 
 ## Writing controllers

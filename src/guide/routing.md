@@ -1,5 +1,16 @@
 # Routing
 
+## Table of Contents
+
+- [Available methods](#available-methods)
+- [Request object](#request-object)
+- [Route parameters](#route-parameters)
+    - [Multiple route parameters](#multiple-route-parameters)
+    - [Patterns in route parameters](#patterns-in-route-parameters)
+- [Named routes](#named-routes)
+- [Route groups](#route-groups)
+- [Route middlewares](#route-middlewares)
+
 Phenix routes are based on the [amphp/http-server-router](https://amphp.org/http-server-router) package, providing a simple and elegant syntax through a facade:
 
 ```php

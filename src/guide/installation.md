@@ -1,5 +1,11 @@
 # Installation
 
+## Table of Contents
+
+- [Requirements](#requirements)
+- [Composer installation](#composer-installation)
+- [Send request](#send-request)
+
 ## Requirements
 
 - php:^8.1
