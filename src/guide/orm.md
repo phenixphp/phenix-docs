@@ -6,17 +6,15 @@
 - [Generating Models Classes](#generating-models-classes)
 - [Model conventions](#model-conventions)
     - [Defining Table](#defining-table)
-    - [Defining Model Properties](#defining-model-properties)
-    - [Defining Relationships](#defining-relationships)
+    - [Model Properties](#model-properties)
+    - [Relationships](#relationships)
 - [Retrieving Models](#retrieving-models)
-    - [Single Model](#get-single-model)
-    - [Collections](#get-model-collection)
+    - [Single Model](#single-model)
+    - [Collections](#collections)
+    - [Pagination](#pagination)
 - [Saving Models](#saving-models)
-    - [Save Model Example](#save-model-example)
 - [Updating Models](#updating-models)
-    - [Update Model Example](#update-model-example)
 - [Deleting Models](#deleting-models)
-    - [Delete Model Example](#delete-model-example)
 
 ## Introduction
 
@@ -102,7 +100,7 @@ public static function table(): string
 
 ```
 
-### Defining Model Properties
+### Model Properties
 
 Model properties are defined using PHP attributes. Here are the available attributes:
 
@@ -140,7 +138,7 @@ use Phenix\Database\Models\Attributes\ForeignKey;
 public int $userId;
 ```
 
-### Defining Relationships
+### Relationships
 
 Relationships between models are defined using specific attributes:
 
@@ -187,10 +185,10 @@ When the column name in the database and the property name in the model are diff
 use Phenix\Database\Models\Attributes\Id;
 use Phenix\Database\Models\Attributes\Column;
 
-#[Id('idKey')]
+#[Id(name: 'idKey')] // Column name in DB
 public int $id;
 
-#[Column('customerName')]
+#[Column(name: 'customerName')] // Column name in DB
 public string $name;
 ```
 
@@ -246,7 +244,7 @@ class User extends DatabaseModel
 
 The model query builder allows executing queries and mapping the results into models. If the query retrieves multiple records, they are added to a collection.
 
-### Get single model
+### Single model
 To query a single model, you can use the `first` method on the query builder. This method retrieves the first record that matches the query criteria and maps it to a model instance. For example, to get a user with a specific ID, you can use the `whereEqual` method to specify the condition and then call `first` to get the user model. More information can be found in the [query builder](/guide/query_builder.html) section.
 
 ```php
@@ -265,7 +263,9 @@ echo $user->name;
 
 This approach simplifies the code and makes it more readable when you need to fetch a single model by its primary key.
 
-### Get model collection
+### Collections
+
+When a query retrieves multiple records, they are automatically mapped into a collection, which provides an array-like interface with additional methods for filtering, sorting, and manipulating the data. Collections make it easy to work with groups of models, allowing you to iterate over them, apply transformations, and perform bulk operations efficiently.
 
 ```php
 $users = User::query()->selectAllColumns()->get();
@@ -275,13 +275,51 @@ foreach ($users as $user) {
 }
 ```
 
-You can paginate the results using the `paginate` method of the query builder.
+### Pagination
+
+The `paginate` method is used to retrieve a paginated set of results from the database. It simplifies the process of fetching and displaying paginated data, making it easier to handle large datasets by breaking them into manageable chunks.
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Phenix\Http\Request;
+use Phenix\Http\Response;
+use Phenix\Http\Controller;
+
+class UserController extends Controller
+{
+    public function index(Request $request): Response
+    {
+        $users = User::query()
+            ->selectAllColumns()
+            ->paginate($request->getUri());
+
+        return response()->json($users);
+    }
+}
+```
+
+#### Paginate Signature
+
+```php
+use League\Uri\Http;
+use Phenix\Database\Paginator;
+
+public function paginate(Http $uri, int $defaultPage = 1, int $defaultPerPage = 15): Paginator
+```
+
+- **`Http $uri`**: An instance of the `Http` class from the `League\Uri` package, representing the current URI. This is used to extract query parameters for pagination.
+- **`int $defaultPage`**: The default page number to use if no page parameter is present in the URI. Defaults to `1`.
+- **`int $defaultPerPage`**: The default number of items per page if no per_page parameter is present in the URI. Defaults to `15`.
 
 ## Saving Models
 
-To save a model to the database, simply call the `save` method:
-
-### Save Model Example
+The `save` method is used to persist a model instance to the database. This method handles both the creation of new records and the updating of existing records.
 
 ```php
 $user = new User();
@@ -290,11 +328,18 @@ $user->email = 'john@example.com';
 $user->save();
 ```
 
+The `create` method in a static method used to create a new model instance with the given attributes. This method simplifies the process of instantiating a model, setting its properties, and saving it to the database in a single step.
+
+```php
+$user = User::create([
+    'name' => 'John Doe',
+    'email' => 'john@example.com',
+    'created_at' => Date::now(),
+]);
+```
 ## Updating Models
 
 To update an existing model, first retrieve the model, make the necessary changes, and then call the `save` method:
-
-### Update Model Example
 
 ```php
 $user = User::find(1);
@@ -305,8 +350,6 @@ $user->save();
 ## Deleting Models
 
 To delete a model from the database, call the `delete` method:
-
-### Delete Model Example
 
 ```php
 $user = User::find(1);
