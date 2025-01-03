@@ -12,6 +12,7 @@
     - [Renaming Tables](#renaming-tables)
 - [Columns](#columns)
     - [Column Types](#column-types)
+    - [Column options](#column-options)
     - [Checking if Column Exists](#checking-if-column-exists)
     - [Renaming a Column](#renaming-a-column)
     - [Adding Column After Another](#adding-column-after-another)
@@ -174,7 +175,7 @@ The MySQL adapter also supports `enum`, `set`, `blob`, `tinyblob`, `mediumblob`,
 
 The Postgres adapter supports `interval`, `json`, `jsonb`, `uuid`, `cidr`, `inet`, and `macaddr` column types (PostgreSQL 9.3 and above).
 
-#### Column Options
+### Column Options
 
 For any column type:
 

@@ -288,17 +288,17 @@ The store method will allow us to add new users. Let's write the code. Correspon
 Route::post('/users', [UserController::class, 'store']);
 ```
 
-Because we are using the query builder, first the insertion is executed and then a query to obtain the inserted record. In later versions, the last inserted ID will be obtained. Additionally, with the use of models, this process is totally transparent; the code will be very simple and powerful.
+Because we are using the query builder, first the insertion is executed and then a query to obtain the inserted record.
 
 ```php
 public function store(Request $request): Response
 {
-    $data = json_decode($request->getBody()->read(), true);
+    $data = $request->body()->toArray();
 
-    DB::table('users')->insert($data);
+    $id = DB::table('users')->insertRow($data);
 
     $user = DB::table('users')
-        ->whereEqual('email', $data['email'])
+        ->whereEqual('id', $id)
         ->first();
 
     return response()->json($user, HttpStatus::CREATED);
@@ -337,16 +337,10 @@ Route::get('/users/{user}', [UserController::class, 'show']);
 **Remember** that every time we make changes to our code, we must restart the server.
 
 ```php
-use Phenix\Http\Attributes;
-
-// ...
-
 public function show(Request $request): Response
 {
-    $attributes = Attributes::fromRequest($request);
-
     $user = DB::table('users')
-        ->whereEqual('id', $attributes->integer('user'))
+        ->whereEqual('id', $request()->route()->integer('user'))
         ->first();
 
     return response()->json($user, HttpStatus::OK);
@@ -378,15 +372,12 @@ We will only update the **name** for practical purposes.
 ```php
 public function update(Request $request): Response
 {
-    $attributes = Attributes::fromRequest($request);
-    $data = json_decode($request->getBody()->read(), true);
-
     DB::table('users')
-        ->whereEqual('id', $attributes->integer('user'))
-        ->update(['name' => $data['name']]);
+        ->whereEqual('id', $request->route()->integer('user'))
+        ->update(['name' => $request->body('name')]);
 
     $user = DB::table('users')
-        ->whereEqual('id', $attributes->integer('user'))
+        ->whereEqual('id', $request->route()->integer('user'))
         ->first();
 
     return response()->json($user, HttpStatus::OK);
@@ -418,10 +409,8 @@ The response will be a simple message:
 ```php
 public function delete(Request $request): Response
 {
-    $attributes = Attributes::fromRequest($request);
-
     DB::table('users')
-        ->whereEqual('id', $attributes->integer('user'))
+        ->whereEqual('id', $request->route()->integer('user'))
         ->delete();
 
     return response()->json(['message' => 'Ok'], HttpStatus::OK);

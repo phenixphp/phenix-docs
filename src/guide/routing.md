@@ -53,12 +53,8 @@ Route::get('/users', function (Request $request) {
 You can pass parameters in routes, such as IDs of records in the database. The parameters are not injected into the callback but are contained in the `Request` object. The [amphp/http-server-router](https://amphp.org/http-server-router) package is based on the [nikic/FastRoute](https://github.com/nikic/FastRoute) package:
 
 ```php
-use Phenix\Http\Attributes;
-
 Route::get('/users/{user}', function (Request $request) {
-    $attributes = Attributes::fromRequest($request);
-
-    $userId = $attributes->integer('user');
+    $userId = $request->route()->integer('user');
 
     // code
 });
@@ -68,10 +64,8 @@ Multiple route parameters:
 
 ```php
 Route::get('/invoices/{invoice}/payments/{payment}', function (Request $request) {
-    $attributes = Attributes::fromRequest($request);
-
-    $invoiceId = $attributes->integer('invoice');
-    $paymentId = $attributes->integer('payment');
+    $invoiceId = $request->route()->integer('invoice');
+    $paymentId = $request->route()->integer('payment');
 
     // code
 });
