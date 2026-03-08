@@ -1,10 +1,12 @@
-export default {
+import { defineConfig } from 'vitepress'
+
+export default defineConfig({
   title: 'Phenix framework',
   description: 'Phenix framework documentation',
   head: [
     ['meta', { name: 'theme-color', content: '#0077b6' }],
-    ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
-    ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }]
+    ['meta', { name: 'mobile-web-app-capable', content: 'yes' }],
+    ['meta', { name: 'mobile-web-app-status-bar-style', content: 'black' }]
   ],
   themeConfig: {
     nav: [
@@ -41,4 +43,4 @@ export default {
       ]
     }
   }
-}
+})

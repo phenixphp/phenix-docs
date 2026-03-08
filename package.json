@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Phenix framework documentation",
   "main": "index.js",
+  "type": "commonjs",
   "author": {
     "name": "Omar Barbosa",
     "email": "contacto@omarbarbosa.com"
@@ -16,6 +17,6 @@
   "license": "MIT",
   "devDependencies": {
     "vite-plugin-mcp": "^0.3.2",
-    "vitepress": "^1.6.4"
+    "vitepress": "^2.0.0-alpha.16"
   }
 }
