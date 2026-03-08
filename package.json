@@ -3,18 +3,19 @@
   "version": "0.0.1",
   "description": "Phenix framework documentation",
   "main": "index.js",
-  "authors": {
+  "author": {
     "name": "Omar Barbosa",
     "email": "contacto@omarbarbosa.com"
   },
   "repository": "https://github.com/phenixphp/phenix-docs",
   "scripts": {
-    "dev": "vuepress dev src",
-    "build": "vuepress build src"
+    "dev": "vitepress dev src",
+    "build": "vitepress build src",
+    "preview": "vitepress preview src"
   },
   "license": "MIT",
   "devDependencies": {
-    "@vuepress/plugin-google-analytics": "^1.9.10",
-    "vuepress": "^1.5.3"
+    "vite-plugin-mcp": "^0.3.2",
+    "vitepress": "^1.6.4"
   }
 }

@@ -1,9 +1,17 @@
 ---
-home: true
-heroImage: 'images/phenix.png'
-tagline: High performance framework for building RESTful APIs with PHP and Amphp
-actionText: Get Started →
-actionLink: /guide/
+layout: home
+
+hero:
+  name: Phenix framework
+  text: High performance framework for building RESTful APIs with PHP and Amphp
+  image:
+    src: /images/phenix.png
+    alt: Phenix
+  actions:
+    - theme: brand
+      text: Get Started
+      link: /guide/
+
 features:
 - title: Concurrent by default
   details: Modern applications demand tolerance to high traffic. Non-blocking I/O operations and asynchronism allow maximum performance to be achieved.
