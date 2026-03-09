@@ -38,7 +38,9 @@ export default defineConfig({
             { text: 'Seeders', link: '/guide/seeders' },
             { text: 'Query builder', link: '/guide/query_builder' },
             { text: 'ORM', link: '/guide/orm' },
-            { text: 'Filesystem', link: '/guide/filesystem' }
+            { text: 'Filesystem', link: '/guide/filesystem' },
+            { text: 'Queues', link: '/guide/queues' },
+            { text: 'Events', link: '/guide/events' }
           ]
         }
       ]
