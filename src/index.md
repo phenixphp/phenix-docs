@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: Phenix framework
-  text: High performance framework for building RESTful APIs with PHP and Amphp
-  tagline: Asynchronous, concurrent, and blazing fast
+  text: High performance framework for building RESTful APIs
+  tagline: Asynchronous, concurrent, and blazing fast, powered by Amphp
   actions:
     - theme: brand
       text: Get Started
