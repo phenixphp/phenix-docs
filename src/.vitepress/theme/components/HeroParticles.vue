@@ -4,6 +4,8 @@ import { onMounted, onUnmounted, ref } from 'vue'
 const canvasRef = ref(null)
 let animationId = null
 let particles = []
+let resizeObserver = null
+let resizeHandler = null
 
 class Particle {
     constructor(canvas) {
@@ -151,9 +153,8 @@ function animate(canvas, ctx) {
 }
 
 function handleResize(canvas) {
-    const container = canvas.parentElement
-    canvas.width = container.offsetWidth
-    canvas.height = container.offsetHeight
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
     initParticles(canvas)
 }
 
@@ -165,15 +166,24 @@ onMounted(() => {
     handleResize(canvas)
     animate(canvas, ctx)
 
-    const resizeObserver = new ResizeObserver(() => handleResize(canvas))
-    resizeObserver.observe(canvas.parentElement)
+    resizeObserver = new ResizeObserver(() => handleResize(canvas))
+    resizeObserver.observe(document.documentElement)
 
-    window.addEventListener('resize', () => handleResize(canvas))
+    resizeHandler = () => handleResize(canvas)
+    window.addEventListener('resize', resizeHandler)
 })
 
 onUnmounted(() => {
     if (animationId) {
         cancelAnimationFrame(animationId)
+    }
+
+    if (resizeObserver) {
+        resizeObserver.disconnect()
+    }
+
+    if (resizeHandler) {
+        window.removeEventListener('resize', resizeHandler)
     }
 })
 </script>
@@ -186,11 +196,10 @@ onUnmounted(() => {
 
 <style scoped>
 .particles-wrapper {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
     pointer-events: none;
     z-index: 0;
     overflow: hidden;
