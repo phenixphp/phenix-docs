@@ -5,6 +5,8 @@
 - [Writing Migrations](#writing-migrations)
     - [Running Migrations](#running-migrations)
     - [Rolling Back Migrations](#rolling-back-migrations)
+    - [Fresh Migrations](#fresh-migrations)
+
 - [Tables](#tables)
     - [Creating and Updating Tables](#creating-and-updating-tables)
     - [Table Options](#table-options)
@@ -22,6 +24,8 @@
     - [Dropping a Column](#dropping-a-column)
 - [Indexes](#indexes)
 - [Foreign Keys](#foreign-keys)
+- [CLI Options Reference (Migration Commands)](#cli-options-reference-migration-commands)
+
 - [Compatibility Note](#compatibility-note)
 
 Migrations add versioning to database changes over time. The migration system implemented in Phenix is based on [Phinx](https://phinx.org/), and migrations extend `Phenix\Database\Migration`.
@@ -63,21 +67,79 @@ Use `up()` to apply changes and `down()` to revert them.
 
 ### Running Migrations
 
+Run all pending migrations:
+
 ```bash
 php phenix migrate
 ```
 
+Useful options for `migrate`:
+
+- `--environment|-e`: target environment (default: `default`)
+- `--target|-t`: migrate up to a specific version
+- `--date|-d`: migrate up to a specific date (`YYYY[MM[DD[HH[II[SS]]]]]`)
+- `--fake`: mark migrations as run without executing SQL
+
+Examples:
+
+```bash
+php phenix migrate --environment=default
+php phenix migrate -t 20231006144210
+php phenix migrate -d 20231006
+php phenix migrate --fake
+```
+
 ### Rolling Back Migrations
+
+Rollback the latest migration batch:
 
 ```bash
 php phenix migrate:rollback
 ```
 
-Roll back to a specific version:
+Useful options for `migrate:rollback`:
+
+- `--environment|-e`: target environment (default: `default`)
+- `--target|-t`: rollback to a target version
+- `--date|-d`: rollback to a target date (`YYYY[MM[DD[HH[II[SS]]]]]`)
+- `--fake`: mark rollbacks as executed without running SQL
+- `--force|-f`: ignore breakpoints
+- `--dry-run|-x`: print SQL without executing it
+
+Examples:
 
 ```bash
+php phenix migrate:rollback --environment=default
 php phenix migrate:rollback -t 20231006144210
+php phenix migrate:rollback -d 20231006
+php phenix migrate:rollback --fake
+php phenix migrate:rollback -t 0 -f
+php phenix migrate:rollback --dry-run
 ```
+
+### Fresh Migrations
+
+Drop all tables, rollback all migrations, and run migrations again:
+
+```bash
+php phenix migrate:fresh
+```
+
+Useful options for `migrate:fresh`:
+
+- `--seed|-s`: run seeders after migrations
+- `--environment|-e`: target environment (default: `default`)
+- `--dry-run|-x`: print SQL without executing it
+
+Examples:
+
+```bash
+php phenix migrate:fresh --seed
+php phenix migrate:fresh --environment=default
+php phenix migrate:fresh --dry-run
+```
+
+When you pass `--seed`, Phenix runs seeders after migrations. See [Database Seeders](/guide/seeders).
 
 ## Tables
 
@@ -406,6 +468,20 @@ $table->foreign('user_id')
     ->references('id')
     ->on('users')
     ->deferrable('IMMEDIATE');
+```
+
+## CLI Options Reference (Migration Commands)
+
+```bash
+php phenix migrate -e default -t 20231006144210
+php phenix migrate -d 20231006 --fake
+
+php phenix migrate:rollback -e default -t 20231006144210
+php phenix migrate:rollback -d 20231006 -f --dry-run --fake
+
+php phenix migrate:fresh -e default
+php phenix migrate:fresh --seed
+php phenix migrate:fresh --dry-run
 ```
 
 ## Compatibility Note
