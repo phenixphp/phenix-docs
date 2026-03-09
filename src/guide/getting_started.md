@@ -17,7 +17,7 @@ The best way to learn is by practicing. Let's create a basic CRUD using the quer
 
 This guide assumes that you are using [Visual Studio Code](https://code.visualstudio.com/) as your text editor and Ubuntu as your operating system. If you are a Windows user, it is recommended to use Ubuntu with WSL.
 
-```
+```bash
 composer create-project phenixphp/phenix phenix
 
 // Go to root path
@@ -29,7 +29,7 @@ code .
 
 Edit the database configuration variables to establish a connection in the **.env** file. The default database connection is **mysql**.
 
-```
+```bash
 DB_CONNECTION=mysql
 DB_DATABASE=phenix
 DB_USERNAME=root
@@ -40,13 +40,13 @@ DB_PASSWORD=secret
 
 Open a new terminal using the shortcut **Ctrl + \`**, and run a Phenix command.
 
-```
+```bash
 php phenix make:migration CreateUsersTable
 ```
 
 The command will create a migration at the following path:
 
-```
+```bash
 database/migrations/20230930111521_create_users_table.php
 ```
 
@@ -64,8 +64,8 @@ class CreateUsersTable extends Migration
     public function up(): void
     {
         $table = $this->table("users");
-        $table->addColumn('name', 'string', ['limit' => 100]);
-        $table->addColumn('email', 'string', ['limit' => 100]);
+        $table->string('name', 100);
+        $table->string('email', 124)->unique();
         $table->create();
     }
 
@@ -78,13 +78,13 @@ class CreateUsersTable extends Migration
 
 Run the migrations with the following command:
 
-```
+```bash
 php phenix migrate
 ```
 
 Once the migrations have been run, you will see output like the following:
 
-```
+```bash
 using migration paths
  - /home/obarbosa/php/phenix/database/migrations
 using seed paths
@@ -102,7 +102,7 @@ All Done. Took 0.0381s
 
 We need some users created in the database. The command to create the seeder is the following:
 
-```
+```bash
 php phenix make:seeder UsersSeeder
 ```
 
@@ -137,13 +137,13 @@ class UsersSeeder extends Seed
 
 Run the seeder to insert the data:
 
-```
+```bash
 php phenix seed:run
 ```
 
 When the data has been inserted, you will see a result like the following:
 
-```
+```bash
 using migration paths
  - /home/obarbosa/php/phenix/database/migrations
 using seed paths
@@ -161,7 +161,7 @@ All Done. Took 0.0240s
 
 Now let's create the user controller to create the CRUD:
 
-```
+```bash
 php phenix make:controller UserController -a
 ```
 
@@ -226,9 +226,11 @@ If you see any similarity with Laravel routes, it's not a coincidence; the elega
 Now let's add code to the index method. The code should look like this:
 
 ```php
+use App\Models\User;
+
 public function index(Request $request): Response
 {
-    $users = DB::table('users')->paginate($request->getUri());
+    $users = User::query()->paginate($request->getUri());
 
     return response()->json($users);
 }
@@ -238,7 +240,7 @@ The first thing to mention is that we inject the **request** into the index meth
 
 Open the terminal using the shortcut **Ctrl + Shift + \`**, and run the server.
 
-```
+```bash
 php public/index.php
 ```
 
@@ -291,15 +293,13 @@ Route::post('/users', [UserController::class, 'store']);
 Because we are using the query builder, first the insertion is executed and then a query to obtain the inserted record.
 
 ```php
+use App\Models\User;
+
 public function store(Request $request): Response
 {
     $data = $request->body()->toArray();
 
-    $id = DB::table('users')->insertRow($data);
-
-    $user = DB::table('users')
-        ->whereEqual('id', $id)
-        ->first();
+    $user = User::create($data);
 
     return response()->json($user, HttpStatus::CREATED);
 }
@@ -307,7 +307,7 @@ public function store(Request $request): Response
 
 Because the routes are loaded at server startup time, it is necessary to restart the server. Press `Ctrl + C` and run the server again:
 
-```shell
+```bash
 php public/index.php
 ```
 
@@ -337,9 +337,11 @@ Route::get('/users/{user}', [UserController::class, 'show']);
 **Remember** that every time we make changes to our code, we must restart the server.
 
 ```php
+use App\Models\User;
+
 public function show(Request $request): Response
 {
-    $user = DB::table('users')
+    $user = User::query()
         ->whereEqual('id', $request()->route()->integer('user'))
         ->first();
 
@@ -370,15 +372,16 @@ Route::patch('/users/{user}', [UserController::class, 'update']);
 We will only update the **name** for practical purposes.
 
 ```php
+use App\Models\User;
+
 public function update(Request $request): Response
 {
-    DB::table('users')
-        ->whereEqual('id', $request->route()->integer('user'))
-        ->update(['name' => $request->body('name')]);
-
-    $user = DB::table('users')
+    $user = User::query()
         ->whereEqual('id', $request->route()->integer('user'))
         ->first();
+
+    $user->name = $request->body('name');
+    $user->save();
 
     return response()->json($user, HttpStatus::OK);
 }
@@ -407,9 +410,11 @@ Route::delete('/users/{user}', [UserController::class, 'delete']);
 The response will be a simple message:
 
 ```php
+use App\Models\User;
+
 public function delete(Request $request): Response
 {
-    DB::table('users')
+    User::query()
         ->whereEqual('id', $request->route()->integer('user'))
         ->delete();
 
