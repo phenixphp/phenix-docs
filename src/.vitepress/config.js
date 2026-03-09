@@ -6,7 +6,8 @@ export default defineConfig({
   head: [
     ['meta', { name: 'theme-color', content: '#0077b6' }],
     ['meta', { name: 'mobile-web-app-capable', content: 'yes' }],
-    ['meta', { name: 'mobile-web-app-status-bar-style', content: 'black' }]
+    ['meta', { name: 'mobile-web-app-status-bar-style', content: 'black' }],
+    ['link', { rel: 'icon', href: '/favicon.webp' }]
   ],
   themeConfig: {
     nav: [
