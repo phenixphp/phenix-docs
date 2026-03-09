@@ -1,0 +1,264 @@
+/* PhenixPHP Custom Theme - Cyberpunk/Neon Style */
+
+:root {
+    /* Primary Blue Flame Colors */
+    --phenix-blue: #00d4ff;
+    --phenix-blue-dark: #0077b6;
+    --phenix-cyan: #00ffff;
+    --phenix-purple: #7b2cbf;
+    --phenix-pink: #ff006e;
+
+    /* Background Colors */
+    --phenix-bg-dark: #0a0a0f;
+    --phenix-bg-card: #12121a;
+    --phenix-bg-card-hover: #1a1a25;
+
+    /* Glow Effects */
+    --glow-blue: 0 0 20px rgba(0, 212, 255, 0.5), 0 0 40px rgba(0, 212, 255, 0.3), 0 0 60px rgba(0, 212, 255, 0.1);
+    --glow-cyan: 0 0 20px rgba(0, 255, 255, 0.4), 0 0 40px rgba(0, 255, 255, 0.2);
+
+    /* VitePress Theme Overrides */
+    --vp-c-brand-1: var(--phenix-blue);
+    --vp-c-brand-2: var(--phenix-cyan);
+    --vp-c-brand-3: var(--phenix-blue-dark);
+    --vp-c-brand-soft: rgba(0, 212, 255, 0.14);
+
+    --vp-home-hero-name-color: transparent;
+    --vp-home-hero-name-background: linear-gradient(135deg, var(--phenix-cyan) 0%, var(--phenix-blue) 50%, var(--phenix-purple) 100%);
+
+    --vp-home-hero-image-background-image: radial-gradient(circle, rgba(0, 212, 255, 0.3) 0%, transparent 70%);
+    --vp-home-hero-image-filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.6));
+}
+
+.dark {
+    --vp-c-bg: var(--phenix-bg-dark);
+    --vp-c-bg-soft: var(--phenix-bg-card);
+    --vp-c-bg-mute: var(--phenix-bg-card-hover);
+    --vp-c-bg-alt: #0d0d14;
+
+    --vp-c-text-1: rgba(255, 255, 255, 0.95);
+    --vp-c-text-2: rgba(255, 255, 255, 0.7);
+    --vp-c-text-3: rgba(255, 255, 255, 0.5);
+
+    --vp-c-divider: rgba(0, 212, 255, 0.1);
+    --vp-c-gutter: rgba(0, 212, 255, 0.05);
+}
+
+/* Hero Section Enhancements */
+.VPHero {
+    position: relative;
+    overflow: hidden;
+}
+
+.VPHero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(ellipse at 20% 20%, rgba(0, 212, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(123, 44, 191, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(0, 255, 255, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.VPHero .container {
+    position: relative;
+    z-index: 1;
+}
+
+/* Hero Name with Glow */
+.VPHero .name {
+    text-shadow: var(--glow-blue);
+    animation: textGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes textGlow {
+    0% {
+        text-shadow: 0 0 10px rgba(0, 212, 255, 0.5), 0 0 20px rgba(0, 212, 255, 0.3);
+    }
+
+    100% {
+        text-shadow: 0 0 20px rgba(0, 212, 255, 0.8), 0 0 40px rgba(0, 212, 255, 0.5), 0 0 60px rgba(0, 212, 255, 0.3);
+    }
+}
+
+/* Hero Image Enhancement */
+.VPHero .image-container {
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+/* Action Button Enhancements */
+.VPButton.brand {
+    background: linear-gradient(135deg, var(--phenix-blue) 0%, var(--phenix-cyan) 100%);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    box-shadow: var(--glow-blue);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.VPButton.brand::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.VPButton.brand:hover::before {
+    left: 100%;
+}
+
+.VPButton.brand:hover {
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.8), 0 0 60px rgba(0, 212, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Feature Cards Enhancement */
+.VPFeature {
+    background: linear-gradient(135deg, var(--phenix-bg-card) 0%, rgba(18, 18, 26, 0.8) 100%);
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 16px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    margin-top: 32px;
+}
+
+.VPFeature::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--phenix-cyan), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.VPFeature:hover {
+    border-color: rgba(0, 212, 255, 0.4);
+    box-shadow:
+        0 0 20px rgba(0, 212, 255, 0.15),
+        inset 0 0 20px rgba(0, 212, 255, 0.03);
+    transform: translateY(-4px);
+}
+
+.VPFeature:hover::before {
+    opacity: 1;
+}
+
+.VPFeature .title {
+    color: var(--phenix-cyan);
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+/* Navigation Enhancement */
+.VPNav {
+    background: rgba(10, 10, 15, 0.8) !important;
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+.VPNavBarTitle .title {
+    background: linear-gradient(135deg, var(--phenix-cyan), var(--phenix-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--phenix-bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--phenix-blue), var(--phenix-cyan));
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--phenix-cyan);
+}
+
+/* Code Block Enhancement */
+.dark .vp-code-group,
+.dark div[class*='language-'] {
+    background: var(--phenix-bg-card);
+    border: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+/* Selection Color */
+::selection {
+    background: rgba(0, 212, 255, 0.3);
+    color: white;
+}
+
+/* Sidebar Enhancement */
+.VPSidebar {
+    background: rgba(10, 10, 15, 0.95) !important;
+    border-right: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+.VPSidebarItem.is-active>.item>.link>.text {
+    color: var(--phenix-cyan);
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+/* Footer Enhancement */
+.VPFooter {
+    border-top: 1px solid rgba(0, 212, 255, 0.1);
+    background: linear-gradient(180deg, transparent, rgba(0, 212, 255, 0.02));
+}
+
+/* Particles Container */
+.particles-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Phoenix Logo Animation */
+.phoenix-logo {
+    animation: phoenixGlow 4s ease-in-out infinite alternate, float 6s ease-in-out infinite;
+}
+
+@keyframes phoenixGlow {
+    0% {
+        filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.6)) drop-shadow(0 0 40px rgba(0, 212, 255, 0.3));
+    }
+
+    100% {
+        filter: drop-shadow(0 0 30px rgba(0, 255, 255, 0.8)) drop-shadow(0 0 60px rgba(0, 212, 255, 0.5)) drop-shadow(0 0 80px rgba(123, 44, 191, 0.3));
+    }
+}

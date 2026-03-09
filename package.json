@@ -12,11 +12,17 @@
   "scripts": {
     "dev": "vitepress dev src",
     "build": "vitepress build src",
-    "preview": "vitepress preview src"
+    "preview": "vitepress preview src",
+    "format": "standard --fix"
   },
   "license": "MIT",
   "devDependencies": {
+    "standard": "^17.1.2",
     "vite-plugin-mcp": "^0.3.2",
     "vitepress": "^2.0.0-alpha.16"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.2.1",
+    "tailwindcss": "^4.2.1"
   }
 }
