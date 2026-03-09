@@ -6,35 +6,37 @@
     - [Running Migrations](#running-migrations)
     - [Rolling Back Migrations](#rolling-back-migrations)
 - [Tables](#tables)
+    - [Creating and Updating Tables](#creating-and-updating-tables)
     - [Table Options](#table-options)
     - [Checking if Table Exists](#checking-if-table-exists)
     - [Dropping Tables](#dropping-tables)
     - [Renaming Tables](#renaming-tables)
 - [Columns](#columns)
+    - [Fluent Column Syntax](#fluent-column-syntax)
+    - [Convenience Helpers](#convenience-helpers)
     - [Column Types](#column-types)
-    - [Column options](#column-options)
+    - [Column Modifiers](#column-modifiers)
     - [Checking if Column Exists](#checking-if-column-exists)
     - [Renaming a Column](#renaming-a-column)
     - [Adding Column After Another](#adding-column-after-another)
     - [Dropping a Column](#dropping-a-column)
 - [Indexes](#indexes)
 - [Foreign Keys](#foreign-keys)
+- [Compatibility Note](#compatibility-note)
 
-Migrations add versioning to database changes over time. The migration system implemented in Phenix is based on [Phinx](https://phinx.org/), offering simplicity and maintainability. Migrations are stored in the `database/migrations` folder and extend the `Phenix\Database\Migration` class.
+Migrations add versioning to database changes over time. The migration system implemented in Phenix is based on [Phinx](https://phinx.org/), and migrations extend `Phenix\Database\Migration`.
+
+In Phenix, `Migration::table()` returns `Phenix\Database\Migrations\Table`, which includes fluent builders for columns and foreign keys.
 
 ## Writing Migrations
 
-To create a migration, run the following Phenix command:
+To create a migration, run:
 
-```
+```bash
 php phenix make:migration CreateUserTable
 ```
 
-The name of the migration must be in camel case style. The class will be created with the name in camel case style, but the file will be created with a name composed of two parts: the date and time, and the name of the migration in snake case style. For example, `20231006144210_create_users_table`.
-
-- Version (time): 20231006144210
-- File name: create_users_table
-- Class name: CreateUserTable
+The migration class extends `Phenix\Database\Migration`:
 
 ```php
 <?php
@@ -47,89 +49,100 @@ class CreateUsersTable extends Migration
 {
     public function up(): void
     {
-        // ..
+        // ...
     }
 
     public function down(): void
     {
-        // ..
+        // ...
     }
 }
 ```
 
-The `up` method is used to create and modify tables, add indexes, and perform other operations, while the `down` method should reverse the operations performed by the `up` method.
+Use `up()` to apply changes and `down()` to revert them.
 
 ### Running Migrations
 
-To run the migrations, use the `migrate` command:
-
-```
+```bash
 php phenix migrate
 ```
 
 ### Rolling Back Migrations
 
-The rollback command reverts the last migration, or optionally up to a specific version:
-
-```
+```bash
 php phenix migrate:rollback
 ```
 
-To roll back to a specific version, use the `-t` option:
+Roll back to a specific version:
 
-```
+```bash
 php phenix migrate:rollback -t 20231006144210
 ```
 
 ## Tables
 
-The `table` method prepares the table to be created. The first argument is the name of the table, and the second argument is an associative array of options.
+### Creating and Updating Tables
+
+Use `table()` to get a fluent `Table` instance. Define columns and then call `create()`, `update()`, or `save()`.
 
 ```php
 public function up(): void
 {
-    $table = $this->table("users");
-    $table->addColumn('name', 'string', ['limit' => 100]);
-    $table->addColumn('email', 'string', ['limit' => 100]);
+    $table = $this->table('users');
+
+    $table->id();
+    $table->string('name', 100);
+    $table->string('email', 150)->unique();
+    $table->timestamps();
+
     $table->create();
 }
 ```
 
-> **Important**: The `id` column is not defined because it is automatically created as the primary key. To specify a different primary key, use the `primary_key` option.
+> **Important**: Explicit `create()`, `update()`, or `save()` is recommended for clarity.
 
 ### Table Options
 
-| Option      | Values                          |
-|-------------|---------------------------------|
-| primary_key | `array`, `string`, `false`      |
-| engine      | Defaults to `InnoDB`            |
-| collation   | Defaults to `utf8mb4_unicode_ci`|
-| signed      | Defaults to `false`             |
+The second argument of `table($name, $options)` is an associative options array.
+
+| Option      | Values                     |
+|-------------|----------------------------|
+| primary_key | `array`, `string`, `false` |
+| engine      | e.g. `InnoDB` (MySQL)      |
+| collation   | e.g. `utf8mb4_unicode_ci`  |
+| signed      | `true`, `false`            |
+
+Example with custom primary key:
+
+```php
+$table = $this->table('personal_access_tokens', ['id' => false, 'primary_key' => 'id']);
+$table->uuid('id');
+$table->create();
+```
 
 ### Checking if Table Exists
-
-The `hasTable` method verifies the existence of a table in the database.
 
 ```php
 public function up(): void
 {
     if (! $this->hasTable('users')) {
-        // code
+        $table = $this->table('users');
+        $table->string('name', 100);
+        $table->create();
     }
 }
 ```
 
 ### Dropping Tables
 
-To drop a table, use the `drop` method and invoke the `save` method.
-
 ```php
-$this->table('users')->drop()->save();
+public function down(): void
+{
+    $this->table('users')->drop()->save();
+}
 ```
 
 ### Renaming Tables
-
-To rename tables, use the `rename` method and invoke the `update` method to apply the change.
 
 ```php
 $this->table('users')
@@ -139,114 +152,158 @@ $this->table('users')
 
 ## Columns
 
-The `addColumn` method adds columns to the table being created, specifying the data type and additional configuration options.
+### Fluent Column Syntax
+
+Phenix exposes fluent methods directly on `Table`:
 
 ```php
-public function up(): void
-{
-    $table = $this->table("users");
-    $table->addColumn('name', 'string', ['limit' => 100]);
-    $table->create();
-}
+$table = $this->table('users');
+
+$table->string('name', 100)->comment('User name');
+$table->integer('age')->default(0);
+$table->boolean('is_active')->default(true);
+
+$table->create();
+```
+
+### Convenience Helpers
+
+- `id(string $name = 'id')`: unsigned big integer with identity.
+- `timestamps(bool $timezone = false)`: adds `created_at` and `updated_at` timestamp columns.
+
+```php
+$table = $this->table('posts');
+
+$table->id();
+$table->string('title');
+$table->timestamps();
+
+$table->create();
 ```
 
 ### Column Types
 
-Supported data types for columns:
+#### Text and character
 
-- binary
-- boolean
-- char
-- date
-- datetime
-- decimal
-- float
-- double
-- smallinteger
-- integer
-- biginteger
-- string
-- text
-- time
-- timestamp
-- uuid
+- `string($name, int $limit = 255)`
+- `text($name, ?int $limit = null)`
+- `char($name, int $limit = 255)`
+- `uuid($name)`
+- `ulid($name)`
 
-The MySQL adapter also supports `enum`, `set`, `blob`, `tinyblob`, `mediumblob`, `longblob`, `bit`, and `json` column types (`json` in MySQL 5.7 and above). When providing a limit value and using `binary`, `varbinary`, or `blob` and its subtypes, the retained column type will be based on the required length (see [Limit Option and MySQL](#limit-option-and-mysql) for details).
+```php
+$table->string('title', 150);
+$table->text('content')->nullable();
+$table->char('country_code', 2);
+$table->uuid('external_id');
+$table->ulid('public_id');
+```
 
-The Postgres adapter supports `interval`, `json`, `jsonb`, `uuid`, `cidr`, `inet`, and `macaddr` column types (PostgreSQL 9.3 and above).
+#### Numeric
 
-### Column Options
+- `integer($name, ?int $limit = null, bool $identity = false)`
+- `bigInteger($name, bool $identity = false)`
+- `smallInteger($name, bool $identity = false)`
+- `unsignedInteger($name, ?int $limit = null, bool $identity = false)`
+- `unsignedBigInteger($name, bool $identity = false)`
+- `unsignedSmallInteger($name, bool $identity = false)`
+- `decimal($name, int $precision = 10, int $scale = 2)`
+- `unsignedDecimal($name, int $precision = 10, int $scale = 2)`
+- `float($name)`
+- `unsignedFloat($name)`
+- `double($name, bool $signed = true)`
 
-For any column type:
+```php
+$table->unsignedBigInteger('user_id');
+$table->decimal('price', 10, 2)->default(0.00);
+$table->double('ratio')->default(1.0);
+```
 
-| Option  | Description                                                                                                                                                                         |
-|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| limit   | Set maximum length for strings, also hints column types in adapters (see note below)                                                                                                |
-| length  | Alias for `limit`                                                                                                                                                                   |
-| default | Set default value or action                                                                                                                                                         |
-| null    | Allow `NULL` values, defaults to false if `identity` option is set to true, else defaults to true                                                                                   |
-| after   | Specify the column that a new column should be placed after, or use `\Phinx\Db\Adapter\MysqlAdapter::FIRST` to place the column at the start of the table *(only applies to MySQL)* |
-| comment | Set a text comment on the column                                                                                                                                                    |
+#### Date and time
 
-For `decimal` columns:
+- `date($name)`
+- `dateTime($name)`
+- `time($name, bool $timezone = false)`
+- `timestamp($name, bool $timezone = false)`
+- `interval($name)` (PostgreSQL)
 
-| Option    | Description                                                       |
-|-----------|-------------------------------------------------------------------|
-| precision | Combine with `scale` to set decimal accuracy                      |
-| scale     | Combine with `precision` to set decimal accuracy                  |
-| signed    | Enable or disable the `unsigned` option *(only applies to MySQL)* |
+```php
+$table->date('published_on');
+$table->dateTime('published_at')->nullable();
+$table->timestamp('created_at')->currentTimestamp();
+$table->timestamp('updated_at')->nullable()->onUpdateCurrentTimestamp();
+```
 
-For `enum` and `set` columns:
+#### Special and structured
 
-| Option | Description                                         |
-|--------|-----------------------------------------------------|
-| values | Can be a comma-separated list or an array of values |
+- `boolean($name)`
+- `json($name)`
+- `jsonb($name)` (PostgreSQL)
+- `enum($name, array $values)`
+- `set($name, array $values)`
 
-For `smallinteger`, `integer`, and `biginteger` columns:
+```php
+$table->boolean('is_published')->default(false);
+$table->json('metadata')->nullable();
+$table->enum('status', ['draft', 'published'])->default('draft');
+```
 
-| Option   | Description                                                       |
-|----------|-------------------------------------------------------------------|
-| identity | Enable or disable automatic incrementing                          |
-| signed   | Enable or disable the `unsigned` option *(only applies to MySQL)* |
+#### Binary and network
 
-For Postgres, when using `identity`, it will utilize the `serial` type appropriate for the integer size, so that `smallinteger` will give you `smallserial`, `integer` gives `serial`, and `biginteger` gives `bigserial`.
+- `binary($name, ?int $limit = null)`
+- `blob($name, ?int $limit = null)`
+- `bit($name, int $limit = 1)`
+- `inet($name)` (PostgreSQL)
+- `cidr($name)` (PostgreSQL)
+- `macaddr($name)` (PostgreSQL)
 
-For `timestamp` columns:
+```php
+$table->blob('payload')->nullable();
+$table->bit('flags', 8)->default(0);
+$table->inet('ip_address')->nullable();
+```
 
-| Option   | Description                                                                                                    |
-|----------|----------------------------------------------------------------------------------------------------------------|
-| default  | Set default value (use with `CURRENT_TIMESTAMP`)                                                               |
-| update   | Set an action to be triggered when the row is updated (use with `CURRENT_TIMESTAMP`) *(only applies to MySQL)* |
-| timezone | Enable or disable the `with time zone` option for `time` and `timestamp` columns *(only applies to Postgres)*  |
+### Column Modifiers
 
-For `boolean` columns:
+Common modifiers available in fluent builders:
 
-| Option | Description                                                       |
-|--------|-------------------------------------------------------------------|
-| signed | Enable or disable the `unsigned` option *(only applies to MySQL)* |
+- `nullable()`
+- `comment(string $comment)`
+- `default(...)` (typed by column)
+- `limit(int $limit)` / `length(int $length)`
+- `after(string $column)`
+- `first()`
+- `unique()`
 
-For `string` and `text` columns:
+Additional modifiers by column category:
 
-| Option    | Description                                                                  |
-|-----------|------------------------------------------------------------------------------|
-| collation | Set collation that differs from table defaults *(only applies to MySQL)*     |
-| encoding  | Set character set that differs from table defaults *(only applies to MySQL)* |
+- Numeric sign and identity: `signed()`, `unsigned()`, `identity()`
+- Decimal precision: `precision(int)`, `scale(int)`
+- Timestamps: `currentTimestamp()`, `onUpdateCurrentTimestamp()`, `update(string)`
+- Timezone-related: `timezone(bool)` or `withTimezone(bool)` depending on type
+- Enum/set values: `values(array $values)`
+- Foreign key builder options: see [Foreign Keys](#foreign-keys)
 
-For foreign key definitions:
+```php
+$table->string('email')->unique();
+$table->string('nickname')->nullable()->after('email');
+$table->unsignedInteger('visits')->default(0);
+$table->timestamp('updated_at')->onUpdateCurrentTimestamp();
+```
 
-| Option     | Description                                           |
-|------------|-------------------------------------------------------|
-| update     | Set an action to be triggered when the row is updated |
-| delete     | Set an action to be triggered when the row is deleted |
-| constraint | Set a name to be used by the foreign key constraint   |
+Adapter notes:
+
+- `first()` is meaningful for MySQL column positioning.
+- `deferrable()` in foreign keys is PostgreSQL-only.
+- `enum`/`set` use `string` fallback in SQLite.
 
 ### Checking if Column Exists
 
 ```php
-$column = $table->hasColumn('username');
+$table = $this->table('users');
 
-if ($column) {
-    // code
+if ($table->hasColumn('username')) {
+    // ...
 }
 ```
 
@@ -262,40 +319,95 @@ $this->table('users')
 
 ```php
 $table = $this->table('users');
-$table->addColumn('city', 'string', ['after' => 'email']);
+$table->string('city', 100)->after('email');
 $table->update();
 ```
 
 ### Dropping a Column
 
 ```php
-$table = $this->table('users');
-$table->removeColumn('nickname')->save();
+$this->table('users')
+    ->removeColumn('nickname')
+    ->save();
 ```
 
 ## Indexes
 
-Indexes are used to improve the performance of database queries by speeding up data retrieval. They serve as data structures that provide fast access to specific rows within database tables. By creating an index on one or more columns, the database can quickly locate the desired data without having to scan the entire table, resulting in significant query optimization.
+Use `addIndex()` for explicit indexes:
 
 ```php
-$table = $this->table("users");
-$table->addColumn('name', 'string', ['limit' => 100]);
-$table->addColumn('email', 'string', ['limit' => 100]);
-$table->addIndex(['email']);
+$table = $this->table('users');
+
+$table->string('email', 150);
+$table->unsignedInteger('tenant_id');
+
+$table->addIndex(['email'], ['unique' => true]);
+$table->addIndex(['tenant_id', 'email'], ['name' => 'idx_users_tenant_email']);
+
 $table->create();
 ```
 
-More about indexes: [Indexes in Depth](https://book.cakephp.org/phinx/0/en/migrations.html#working-with-indexes).
+You can also create a unique single-column index with `->unique()`:
+
+```php
+$table->string('username')->unique();
+```
 
 ## Foreign Keys
 
-To add foreign keys, use the `addForeignKey` method. The first argument is the name of the foreign key, the second argument is the name of the related table, the third argument is the column that refers to the foreign key, and the fourth argument is the configuration options.
+Phenix supports both direct and fluent APIs.
+
+Direct API:
 
 ```php
-$table = $this->table("posts");
-$table->addColumn('title', 'string', ['limit' => 100]);
-$table->addForeignKey('user_id', 'users', 'id', ['delete'=> 'SET_NULL', 'update'=> 'NO_ACTION']);
+use Phenix\Database\Constants\ColumnAction;
+
+$table = $this->table('posts');
+
+$table->unsignedBigInteger('user_id');
+$table->foreignKey('user_id', 'users', 'id', [
+    'delete' => ColumnAction::CASCADE->value,
+    'update' => ColumnAction::NO_ACTION->value,
+]);
+
 $table->create();
 ```
 
-More about foreign keys: [Foreign Keys in Depth](https://book.cakephp.org/phinx/0/en/migrations.html#working-with-foreign-keys).
+Fluent API:
+
+```php
+use Phenix\Database\Constants\ColumnAction;
+
+$table = $this->table('posts');
+
+$table->unsignedBigInteger('author_id');
+$table->foreign('author_id')
+    ->references('id')
+    ->on('users')
+    ->onDelete(ColumnAction::SET_NULL)
+    ->onUpdate(ColumnAction::RESTRICT)
+    ->constraint('fk_posts_author_id');
+
+$table->create();
+```
+
+Composite keys are supported in fluent style:
+
+```php
+$table->foreign(['user_id', 'role_id'])
+    ->references(['user_id', 'role_id'])
+    ->on('user_roles');
+```
+
+PostgreSQL deferrable example:
+
+```php
+$table->foreign('user_id')
+    ->references('id')
+    ->on('users')
+    ->deferrable('IMMEDIATE');
+```
+
+## Compatibility Note
+
+`addColumn(...)` from Phinx is still available when you need low-level control, but Phenix documentation recommends fluent migration builders as the default style.
