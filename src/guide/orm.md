@@ -12,6 +12,7 @@
     - [Single Model](#single-model)
     - [Collections](#collections)
     - [Pagination](#pagination)
+    - [Incremental Column Selection](#incremental-column-selection)
 - [Fluent Connection](#fluent-connection)
 - [Eager Loading](#eager-loading)
     - [Constrained Eager Loading](#constrained-eager-loading)
@@ -326,6 +327,17 @@ public function paginate(Http $uri, int $defaultPage = 1, int $defaultPerPage = 
 - **`Http $uri`**: An instance of the `Http` class from the `League\Uri` package, representing the current URI. This is used to extract query parameters for pagination.
 - **`int $defaultPage`**: The default page number to use if no page parameter is present in the URI. Defaults to `1`.
 - **`int $defaultPerPage`**: The default number of items per page if no per_page parameter is present in the URI. Defaults to `15`.
+
+### Incremental Column Selection
+
+Use `addSelect(...)` to append columns to an existing select clause:
+
+```php
+$users = User::query()
+    ->select(['id'])
+    ->addSelect(['name', 'email'])
+    ->get();
+```
 
 ## Fluent Connection
 
