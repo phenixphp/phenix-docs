@@ -12,9 +12,21 @@
     - [Single Model](#single-model)
     - [Collections](#collections)
     - [Pagination](#pagination)
+- [Fluent Connection](#fluent-connection)
+- [Eager Loading](#eager-loading)
+    - [Constrained Eager Loading](#constrained-eager-loading)
+    - [Pivot Columns in BelongsToMany](#pivot-columns-in-belongstomany)
+    - [Chaperone in HasMany](#chaperone-in-hasmany)
+    - [Nested Eager Loading](#nested-eager-loading)
 - [Saving Models](#saving-models)
 - [Updating Models](#updating-models)
 - [Deleting Models](#deleting-models)
+- [Model State and Serialization](#model-state-and-serialization)
+- [Transactions](#transactions)
+    - [Transaction Callback](#transaction-callback)
+    - [Manual Transactions](#manual-transactions)
+    - [Using withTransaction](#using-withtransaction)
+    - [Model Methods with TransactionManager](#model-methods-with-transactionmanager)
 
 ## Introduction
 
@@ -315,6 +327,105 @@ public function paginate(Http $uri, int $defaultPage = 1, int $defaultPerPage = 
 - **`int $defaultPage`**: The default page number to use if no page parameter is present in the URI. Defaults to `1`.
 - **`int $defaultPerPage`**: The default number of items per page if no per_page parameter is present in the URI. Defaults to `15`.
 
+## Fluent Connection
+
+Use `on(...)` when you want to run ORM operations on a specific connection:
+
+```php
+$users = User::on('sqlite')->get();
+
+$user = User::on('sqlite')->find(1);
+```
+
+This fluent API also supports write operations:
+
+```php
+$user = User::on('sqlite')->create([
+    'name' => 'Fluent User',
+    'email' => 'fluent@example.com',
+]);
+```
+
+## Eager Loading
+
+Use `with(...)` to load relationships together with the main model query:
+
+```php
+$post = Post::query()
+    ->selectAllColumns()
+    ->with('user')
+    ->first();
+```
+
+You can use shorthand syntax to select columns from the relationship:
+
+```php
+$post = Post::query()
+    ->with('user:id,name')
+    ->first();
+```
+
+### Constrained Eager Loading
+
+You can constrain relationship queries using closures:
+
+```php
+use Phenix\Database\Models\Relationships\HasMany;
+
+$user = User::query()
+    ->with([
+        'products' => function (HasMany $relation): void {
+            $relation->query()->select(['id', 'description', 'user_id']);
+        },
+    ])
+    ->first();
+```
+
+### Pivot Columns in BelongsToMany
+
+For many-to-many relationships, you can include pivot fields:
+
+```php
+use Phenix\Database\Models\Relationships\BelongsToMany;
+
+$invoices = Invoice::query()
+    ->with([
+        'products' => function (BelongsToMany $relation): void {
+            $relation->withPivot(['quantity', 'value']);
+        },
+    ])
+    ->get();
+```
+
+### Chaperone in HasMany
+
+When needed, you can assign parent models to children using chaperone:
+
+```php
+use Phenix\Database\Models\Relationships\HasMany;
+
+$user = User::query()
+    ->with([
+        'products' => function (HasMany $relation): void {
+            $relation->withChaperone();
+        },
+    ])
+    ->first();
+```
+
+### Nested Eager Loading
+
+Nested relationships are supported using dot notation:
+
+```php
+$comment = Comment::query()
+    ->with([
+        'product:id,description,user_id,created_at',
+        'product.user:id,name,email,created_at',
+    ])
+    ->first();
+```
+
 ## Saving Models
 
 The `save` method is used to persist a model instance to the database. This method handles both the creation of new records and the updating of existing records.
@@ -354,3 +465,101 @@ To delete a model from the database, call the `delete` method:
 $user = User::find(1);
 $user->delete();
 ```
+
+## Model State and Serialization
+
+Useful model methods:
+
+- `isExisting()`: indicates whether the model is already persisted.
+- `toArray()`: returns model data as an associative array.
+- `toJson()`: returns model data as JSON.
+
+```php
+$user = User::find(1);
+
+if ($user?->isExisting()) {
+    $payload = $user->toArray();
+    $json = $user->toJson();
+}
+```
+
+## Transactions
+
+ORM operations support the same transaction system as the query builder.
+
+### Transaction Callback
+
+Use `DB::transaction(...)` for automatic commit/rollback:
+
+```php
+use Phenix\Database\TransactionManager;
+use Phenix\Facades\DB;
+
+DB::transaction(function (TransactionManager $tx): void {
+    User::create([
+        'name' => 'Alice',
+        'email' => 'alice@example.com',
+    ], $tx);
+
+    $user = User::find(1, ['*'], $tx);
+    $user->name = 'Alice Updated';
+    $user->save($tx);
+});
+```
+
+If the callback throws an exception, changes are rolled back.
+
+### Manual Transactions
+
+Use `DB::beginTransaction()` for explicit control:
+
+```php
+use Phenix\Facades\DB;
+
+$tx = DB::beginTransaction();
+
+try {
+    User::create([
+        'name' => 'Bob',
+        'email' => 'bob@example.com',
+    ], $tx);
+
+    $tx->commit();
+} catch (Throwable $e) {
+    $tx->rollBack();
+
+    throw $e;
+}
+```
+
+### Using withTransaction
+
+`withTransaction(...)` binds a model query builder to an active transaction:
+
+```php
+use Phenix\Database\TransactionManager;
+use Phenix\Facades\DB;
+
+DB::transaction(function (TransactionManager $tx): void {
+    $user = User::query()
+        ->withTransaction($tx)
+        ->find(1);
+
+    if ($user) {
+        $user->name = 'Updated in transaction';
+        $user->save($tx);
+    }
+});
+```
+
+### Model Methods with TransactionManager
+
+The following ORM methods accept an optional `TransactionManager`:
+
+- `User::query(TransactionManager|null $tx = null)`
+- `User::create(array $attributes, TransactionManager|null $tx = null)`
+- `User::find(string|int $id, array $columns = ['*'], TransactionManager|null $tx = null)`
+- `$model->save(TransactionManager|null $tx = null)`
+- `$model->delete(TransactionManager|null $tx = null)`
+
+You can also omit the manager inside a transaction callback; context propagation keeps operations in the active transaction.
