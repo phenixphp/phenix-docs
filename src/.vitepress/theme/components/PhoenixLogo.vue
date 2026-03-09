@@ -140,14 +140,14 @@ onMounted(() => {
 .glow-1 {
     width: 200px;
     height: 200px;
-    background: radial-gradient(circle, rgba(0, 212, 255, 0.4) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(0, 212, 255, 0.4) 0%, transparent 50%);
     animation: pulse 4s ease-in-out infinite;
 }
 
 .glow-2 {
     width: 280px;
     height: 280px;
-    background: radial-gradient(circle, rgba(0, 255, 255, 0.2) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(0, 255, 255, 0.2) 0%, transparent 50%);
     animation: pulse 4s ease-in-out infinite 1s;
 }
 
