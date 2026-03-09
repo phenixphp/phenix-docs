@@ -32,6 +32,14 @@
 - [Insert Statement](#insert-statement)
 - [Update Records](#update-records)
 - [Delete Records](#delete-records)
+- [Transactions](#transactions)
+    - [Transaction Callback](#transaction-callback)
+    - [Manual Transactions](#manual-transactions)
+    - [Nested Transactions and Savepoints](#nested-transactions-and-savepoints)
+    - [Automatic Context Propagation](#automatic-context-propagation)
+    - [TransactionManager API](#transactionmanager-api)
+    - [Transaction Context (Advanced)](#transaction-context-advanced)
+
 
 A query builder is a programming interface or library that allows developers to build and manipulate database queries using a fluent and programmatic syntax rather than writing raw SQL statements. It provides a more intuitive and structured way to construct database queries in a language-specific manner, making it easier to work with databases in applications.
 
@@ -548,3 +556,176 @@ Finally, to delete records from the database, you can use the `delete` method. R
 ```php
 DB::table('users')->whereEqual('id', 1)->delete();
 ```
+
+## Transactions
+
+Phenix Query Builder supports callback-based transactions, manual transactions, nested transactions (savepoints), and transaction context propagation.
+
+This section documents transaction-related methods available in `QueryBuilder` and `TransactionManager`, including recent behavior covered by the feature tests.
+
+### Transaction Callback
+
+Use `transaction` to execute operations atomically.
+
+```php
+use Phenix\Database\TransactionManager;
+use Phenix\Facades\DB;
+
+DB::transaction(function (TransactionManager $tx): void {
+    $tx->from('users')->insert([
+        'name' => 'John Doe',
+        'email' => 'john@example.com',
+    ]);
+
+    $tx->from('users')
+        ->whereEqual('name', 'John Doe')
+        ->update(['email' => 'john.doe@example.com']);
+});
+```
+
+Behavior:
+
+- If the callback finishes successfully, the transaction is committed.
+- If the callback throws an exception, the transaction is rolled back and the exception is rethrown.
+- The callback return value is returned by `transaction(...)`.
+
+### Manual Transactions
+
+Use `beginTransaction()` when you need explicit control.
+
+```php
+use Phenix\Facades\DB;
+
+$tx = DB::beginTransaction();
+
+try {
+    $tx->from('users')->insert([
+        'name' => 'Alice',
+        'email' => 'alice@example.com',
+    ]);
+
+    $tx->from('users')->insert([
+        'name' => 'Bob',
+        'email' => 'bob@example.com',
+    ]);
+
+    $tx->commit();
+} catch (Throwable $e) {
+    $tx->rollBack();
+
+    throw $e;
+}
+```
+
+`QueryBuilder` also exposes `commit()` and `rollBack()` directly (advanced use), but in manual flow the recommended API is through the `TransactionManager` returned by `beginTransaction()`.
+
+### Nested Transactions and Savepoints
+
+Nested transactions are supported. Inner transactions use savepoints, so you can roll back an inner block without losing all outer changes.
+
+```php
+use Phenix\Facades\DB;
+
+DB::transaction(function (): void {
+    DB::from('users')->insert(['name' => 'Root', 'email' => 'root@example.com']);
+
+    try {
+        DB::transaction(function (): void {
+            DB::from('users')->insert(['name' => 'Nested', 'email' => 'nested@example.com']);
+
+            throw new Exception('Nested failure');
+        });
+    } catch (Exception $e) {
+        // Outer transaction can continue
+    }
+
+    DB::from('users')->insert(['name' => 'After', 'email' => 'after@example.com']);
+});
+```
+
+### Automatic Context Propagation
+
+Inside a transaction callback, you do not need to pass the `TransactionManager` everywhere. Query builders created in the same execution context automatically use the current transaction.
+
+```php
+use Phenix\Facades\DB;
+
+DB::transaction(function (): void {
+    DB::from('users')->insert(['name' => 'A', 'email' => 'a@example.com']);
+    DB::from('users')->insert(['name' => 'B', 'email' => 'b@example.com']);
+});
+```
+
+This also works with multiple query builder instances created inside the same transaction scope.
+
+### TransactionManager API
+
+The transaction manager offers query-entry helpers and lifecycle controls:
+
+- `table(string $table): QueryBuilder`
+- `from(Closure|string $table): QueryBuilder`
+- `select(array $columns): QueryBuilder`
+- `selectAllColumns(): QueryBuilder`
+- `unprepared(string $sql): SqlResult`
+- `commit(): void`
+- `rollBack(): void`
+- `getQueryBuilder(): QueryBuilder` (advanced)
+- `clone(): QueryBuilder` (advanced)
+
+Example combining select and raw statements within one transaction:
+
+```php
+$tx = DB::beginTransaction();
+
+try {
+    $tx->unprepared("INSERT INTO users (name, email) VALUES ('Neo', 'neo@example.com')");
+
+    $users = $tx->select(['name', 'email'])
+        ->from('users')
+        ->whereEqual('name', 'Neo')
+        ->get();
+
+    $tx->commit();
+} catch (Throwable $e) {
+    $tx->rollBack();
+
+    throw $e;
+}
+```
+
+### Transaction Context (Advanced)
+
+For instrumentation/debugging, you can inspect the current transaction context.
+
+```php
+use Phenix\Database\TransactionContext;
+use Phenix\Facades\DB;
+
+DB::transaction(function (): void {
+    $depth = TransactionContext::depth();
+    $node = TransactionContext::getCurrentNode();
+    $root = TransactionContext::getRoot();
+    $chain = TransactionContext::getChain();
+
+    // ... custom diagnostics
+});
+```
+
+Useful context methods:
+
+- `TransactionContext::has(): bool`
+- `TransactionContext::get(): ?SqlTransaction`
+- `TransactionContext::depth(): int`
+- `TransactionContext::getCurrentNode(): ?TransactionNode`
+- `TransactionContext::getRoot(): ?TransactionNode`
+- `TransactionContext::getChain(): ?TransactionChain`
+
+`TransactionNode` and `TransactionChain` provide additional metadata such as nesting depth, savepoint detection, age, full chain list, and long-running transaction detection.
+
+### Methods Now Covered in Docs
+
+The following transaction-related methods were not documented in this guide and are now explicitly covered here:
+
+- `DB::getTransaction()`
+- `DB::setTransaction(...)`
+- `TransactionManager` methods (`from`, `table`, `select`, `selectAllColumns`, `unprepared`, `commit`, `rollBack`, `getQueryBuilder`, `clone`)
