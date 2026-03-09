@@ -28,6 +28,17 @@
 
     --vp-home-hero-image-background-image: radial-gradient(circle, rgba(0, 212, 255, 0.3) 0%, transparent 70%);
     --vp-home-hero-image-filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.6));
+
+    /* Light mode foundation */
+    --vp-c-bg: #f6fbff;
+    --vp-c-bg-soft: #edf7ff;
+    --vp-c-bg-mute: #e6f2fb;
+    --vp-c-bg-alt: #f2f8ff;
+    --vp-c-text-1: #102131;
+    --vp-c-text-2: #395269;
+    --vp-c-text-3: #5a7288;
+    --vp-c-divider: rgba(0, 119, 182, 0.18);
+    --vp-c-gutter: rgba(0, 119, 182, 0.08);
 }
 
 .dark {
@@ -58,11 +69,18 @@
     right: 0;
     bottom: 0;
     background:
+        radial-gradient(ellipse at 20% 20%, rgba(0, 153, 209, 0.12) 0%, transparent 52%),
+        radial-gradient(ellipse at 80% 80%, transparent 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(0, 174, 239, 0.035) 0%, transparent 72%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.dark .VPHero::before {
+    background:
         radial-gradient(ellipse at 20% 20%, rgba(0, 212, 255, 0.15) 0%, transparent 50%),
         radial-gradient(ellipse at 80% 80%, transparent 0%, transparent 50%),
         radial-gradient(ellipse at 50% 50%, rgba(0, 255, 255, 0.05) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
 }
 
 .VPHero .container {
@@ -105,10 +123,10 @@
 
 /* Action Button Enhancements */
 .VPButton.brand {
-    background: linear-gradient(135deg, #0088bd 0%, #00a9cc 100%);
+    background: linear-gradient(135deg, #005a7d 0%, #00739b 100%);
     color: #ffffff;
     font-weight: 700;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
     border: 1px solid rgba(0, 255, 255, 0.3);
     box-shadow: var(--glow-blue);
     transition: all 0.3s ease;
@@ -132,19 +150,25 @@
 }
 
 .VPButton.brand:hover {
+    color: #ffffff;
     box-shadow: 0 0 30px rgba(0, 212, 255, 0.8), 0 0 60px rgba(0, 212, 255, 0.4);
     transform: translateY(-2px);
 }
 
 /* Feature Cards Enhancement */
 .VPFeature {
-    background: linear-gradient(135deg, var(--phenix-bg-card) 0%, rgba(18, 18, 26, 0.8) 100%);
-    border: 1px solid rgba(0, 212, 255, 0.15);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(236, 247, 255, 0.92) 100%);
+    border: 1px solid rgba(0, 119, 182, 0.18);
     border-radius: 16px;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
     margin-top: 32px;
+}
+
+.dark .VPFeature {
+    background: linear-gradient(135deg, var(--phenix-bg-card) 0%, rgba(18, 18, 26, 0.8) 100%);
+    border: 1px solid rgba(0, 212, 255, 0.15);
 }
 
 .VPFeature::before {
@@ -160,11 +184,18 @@
 }
 
 .VPFeature:hover {
+    border-color: rgba(0, 119, 182, 0.35);
+    box-shadow:
+        0 10px 28px rgba(0, 83, 125, 0.14),
+        inset 0 0 20px rgba(0, 119, 182, 0.03);
+    transform: translateY(-4px);
+}
+
+.dark .VPFeature:hover {
     border-color: rgba(0, 212, 255, 0.4);
     box-shadow:
         0 0 20px rgba(0, 212, 255, 0.15),
         inset 0 0 20px rgba(0, 212, 255, 0.03);
-    transform: translateY(-4px);
 }
 
 .VPFeature:hover::before {
@@ -172,14 +203,24 @@
 }
 
 .VPFeature .title {
+    color: #006ea6;
+    text-shadow: 0 0 8px rgba(0, 191, 255, 0.2);
+}
+
+.dark .VPFeature .title {
     color: var(--phenix-cyan);
     text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
 }
 
 /* Navigation Enhancement */
 .VPNav {
-    background: rgba(10, 10, 15, 0.8) !important;
+    background: rgba(246, 251, 255, 0.82) !important;
     backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0, 119, 182, 0.18);
+}
+
+.dark .VPNav {
+    background: rgba(10, 10, 15, 0.8) !important;
     border-bottom: 1px solid rgba(0, 212, 255, 0.1);
 }
 
@@ -197,6 +238,10 @@
 }
 
 ::-webkit-scrollbar-track {
+    background: #e6f1f9;
+}
+
+.dark ::-webkit-scrollbar-track {
     background: var(--phenix-bg-dark);
 }
 
@@ -224,6 +269,11 @@
 
 /* Sidebar Enhancement */
 .VPSidebar {
+    background: rgba(242, 248, 255, 0.95) !important;
+    border-right: 1px solid rgba(0, 119, 182, 0.14);
+}
+
+.dark .VPSidebar {
     background: rgba(10, 10, 15, 0.95) !important;
     border-right: 1px solid rgba(0, 212, 255, 0.1);
 }
@@ -235,6 +285,11 @@
 
 /* Footer Enhancement */
 .VPFooter {
+    border-top: 1px solid rgba(0, 119, 182, 0.16);
+    background: linear-gradient(180deg, transparent, rgba(0, 174, 239, 0.04));
+}
+
+.dark .VPFooter {
     border-top: 1px solid rgba(0, 212, 255, 0.1);
     background: linear-gradient(180deg, transparent, rgba(0, 212, 255, 0.02));
 }
@@ -249,6 +304,10 @@
     overflow: hidden;
     pointer-events: none;
     z-index: 0;
+}
+
+html:not(.dark) .particles-wrapper {
+    opacity: 0.55;
 }
 
 /* Phoenix Logo Animation */
