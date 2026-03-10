@@ -8,6 +8,7 @@
     - [Multiple route parameters](#multiple-route-parameters)
     - [Patterns in route parameters](#patterns-in-route-parameters)
 - [Named routes](#named-routes)
+- [Route list command](#route-list-command)
 - [Route groups](#route-groups)
 - [Route middlewares](#route-middlewares)
 
@@ -99,6 +100,52 @@ Route::get('/users/{user}', function (Request $request) {
 
 > **Note**: The URL generation helper will be available soon.
 
+## Route list command
+
+Phenix includes a built-in console command to inspect all registered routes:
+
+```sh
+php phenix route:list
+```
+
+By default, the command renders a table with the columns:
+
+- `Method`
+- `Path`
+- `Name`
+- `Middleware`
+- `Params`
+
+### Filtering routes
+
+You can filter the route list using command options:
+
+```sh
+php phenix route:list --name=users
+php phenix route:list --method=GET
+php phenix route:list --path=/admin
+```
+
+- `--name`: filters by route name (partial match).
+- `--method`: filters by HTTP method.
+- `--path`: filters by path (partial match).
+
+You can combine filters:
+
+```sh
+php phenix route:list --method=GET --name=users --path=/admin
+```
+
+### JSON output
+
+Use `--json` to export routes in JSON format:
+
+```sh
+php phenix route:list --json
+```
+
+This is useful for tooling, scripting, or custom route inspection workflows.
+
 ## Route groups
 
 Route groups allow sharing middlewares, assigning route prefixes, and route name prefixes. You can create nested route groups and share their properties in the hierarchy in which the routes are defined.
@@ -144,4 +191,3 @@ Route::get('/users/{user}', function (Request $request) {
     CheckUserIsAdmin::class,
 ]);
 ```
-
