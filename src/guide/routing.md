@@ -8,6 +8,11 @@
     - [Multiple route parameters](#multiple-route-parameters)
     - [Patterns in route parameters](#patterns-in-route-parameters)
 - [Named routes](#named-routes)
+- [Signed routes](#signed-routes)
+    - [Generating signed URLs](#generating-signed-urls)
+    - [Temporary signed URLs](#temporary-signed-urls)
+    - [Protecting routes with ValidateSignature](#protecting-routes-with-validatesignature)
+    - [Ignoring query parameters during validation](#ignoring-query-parameters-during-validation)
 - [Route list command](#route-list-command)
 - [Route groups](#route-groups)
 - [Route middlewares](#route-middlewares)
@@ -98,7 +103,132 @@ Route::get('/users/{user}', function (Request $request) {
 })->name('users.show');
 ```
 
-> **Note**: The URL generation helper will be available soon.
+URL generation is available through:
+
+- `route(...)` helper for named routes
+- `url(...)` helper for path-based URLs
+- `Phenix\Facades\Url` facade for advanced URL features (including signed URLs)
+
+## Signed routes
+
+Signed routes let you generate tamper-resistant URLs using an HMAC signature based on application key encryption.
+
+Phenix supports:
+
+- permanent signed URLs
+- temporary signed URLs with expiration
+- request signature validation
+
+### Generating signed URLs
+
+Use `Url::signedRoute(...)` to generate a signed URL:
+
+```php
+use Phenix\Facades\Url;
+
+$url = Url::signedRoute('unsubscribe', ['user' => 42]);
+```
+
+Signature:
+
+```php
+Url::signedRoute(
+    BackedEnum|string $name,
+    array $parameters = [],
+    DateTimeInterface|DateInterval|int|null $expiration = null,
+    bool $absolute = true
+): string
+```
+
+### Temporary signed URLs
+
+Use `Url::temporarySignedRoute(...)` for expiring links.
+
+```php
+use DateInterval;
+use DateTimeImmutable;
+use Phenix\Facades\Url;
+
+// Expires in 5 minutes
+$url1 = Url::temporarySignedRoute('downloads.show', 300, ['file' => 'report.pdf']);
+
+// Expires in 1 hour
+$url2 = Url::temporarySignedRoute('downloads.show', new DateInterval('PT1H'), ['file' => 'report.pdf']);
+
+// Expires at an exact timestamp
+$url3 = Url::temporarySignedRoute('downloads.show', new DateTimeImmutable('+30 minutes'), ['file' => 'report.pdf']);
+```
+
+Signature:
+
+```php
+Url::temporarySignedRoute(
+    BackedEnum|string $name,
+    DateTimeInterface|DateInterval|int $expiration,
+    array $parameters = [],
+    bool $absolute = true
+): string
+```
+
+### Protecting routes with ValidateSignature
+
+Use `ValidateSignature` middleware to require a valid signature:
+
+```php
+use Phenix\Facades\Route;
+use Phenix\Routing\Middlewares\ValidateSignature;
+
+Route::get('/signed/{user}', fn () => response()->plain('Ok'))
+    ->name('signed.show')
+    ->middleware(ValidateSignature::class);
+```
+
+If the signature is invalid or missing, the middleware returns `403` with:
+
+- `Invalid signature.`
+
+If the signature exists but is expired, it returns `403` with:
+
+- `Signature has expired.`
+
+You can also validate manually via the URL facade:
+
+```php
+use Amp\Http\Server\Request;
+use Phenix\Facades\Url;
+
+function isValid(Request $request): bool
+{
+    return Url::hasValidSignature($request);
+}
+```
+
+Additional API:
+
+```php
+Url::signatureHasNotExpired(Request $request): bool
+```
+
+### Ignoring query parameters during validation
+
+When validating signatures, you can ignore extra tracking query params:
+
+```php
+use Amp\Http\Server\Request;
+use Phenix\Facades\Url;
+
+$isValid = Url::hasValidSignature($request, ignoreQuery: ['tracking', 'utm_source']);
+```
+
+You can also provide a closure:
+
+```php
+$ignore = fn (): array => ['fbclid', 'utm_source'];
+
+$isValid = Url::hasValidSignature($request, ignoreQuery: $ignore);
+```
+
+Ignored parameters are excluded when reconstructing the URL used for signature comparison.
 
 ## Route list command
 
