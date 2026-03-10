@@ -33,6 +33,7 @@ export default defineConfig({
             { text: 'Getting started', link: '/guide/getting_started' },
             { text: 'Hot reloading', link: '/guide/hot_reloading' },
             { text: 'Server', link: '/guide/server' },
+            { text: 'Scheduling', link: '/guide/scheduling' },
             { text: 'Architecture', link: '/guide/architecture' },
             { text: 'Providers', link: '/guide/providers' },
             { text: 'Routing', link: '/guide/routing' },
