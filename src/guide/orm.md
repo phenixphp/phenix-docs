@@ -23,6 +23,7 @@
 - [Updating Models](#updating-models)
 - [Deleting Models](#deleting-models)
 - [Model State and Serialization](#model-state-and-serialization)
+    - [Hidden Attributes in Serialization](#hidden-attributes-in-serialization)
 - [Transactions](#transactions)
     - [Transaction Callback](#transaction-callback)
     - [Manual Transactions](#manual-transactions)
@@ -147,6 +148,14 @@ use Phenix\Database\Models\Attributes\ForeignKey;
 
 #[ForeignKey(name: 'user_id')]
 public int $userId;
+```
+
+**`Hidden`**: Marks a property to be excluded from serialized output (`toArray()` and `toJson()`). This attribute extends `Column`, so the property remains part of model persistence.
+```php
+use Phenix\Database\Models\Attributes\Hidden;
+
+#[Hidden]
+public string $password;
 ```
 
 ### Relationships
@@ -494,6 +503,53 @@ if ($user?->isExisting()) {
     $json = $user->toJson();
 }
 ```
+
+### Hidden Attributes in Serialization
+
+Use `#[Hidden]` to omit sensitive properties from serialized output. Internally, `DatabaseModel::toArray()` skips properties marked with `Hidden`, and `toJson()` inherits that behavior because it serializes `toArray()`.
+
+```php
+use Phenix\Database\Models\Attributes\Column;
+use Phenix\Database\Models\Attributes\Hidden;
+use Phenix\Database\Models\Attributes\Id;
+use Phenix\Database\Models\DatabaseModel;
+
+class User extends DatabaseModel
+{
+    #[Id]
+    public int $id;
+
+    #[Column]
+    public string $name;
+
+    #[Hidden]
+    public string $password;
+
+    public static function table(): string
+    {
+        return 'users';
+    }
+}
+
+$user = new User();
+$user->id = 1;
+$user->name = 'John Hidden';
+$user->password = 'secret';
+
+$array = $user->toArray();
+$json = $user->toJson();
+```
+
+Expected array output:
+
+```php
+[
+    'id' => 1,
+    'name' => 'John Hidden',
+]
+```
+
+`$json` also excludes the `password` field.
 
 ## Transactions
 
