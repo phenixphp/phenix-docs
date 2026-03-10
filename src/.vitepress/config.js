@@ -42,7 +42,9 @@ export default defineConfig({
             { text: 'Crypto', link: '/guide/crypto' },
             { text: 'Tasks', link: '/guide/tasks' },
             { text: 'Queues', link: '/guide/queues' },
-            { text: 'Events', link: '/guide/events' }
+            { text: 'Events', link: '/guide/events' },
+            { text: 'Views', link: '/guide/views' },
+            { text: 'Mailing', link: '/guide/mailing' },
           ]
         }
       ]
