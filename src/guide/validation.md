@@ -10,6 +10,7 @@
 - [Available validation types](#available-validation-types)
     - [Str](#str)
     - [Arr](#arr)
+    - [ArrList](#arrlist)
     - [Collection](#collection)
     - [Dictionary](#dictionary)
     - [Boolean](#boolean)
@@ -19,6 +20,7 @@
     - [Floating](#floating)
     - [Integer](#integer)
     - [Numeric](#numeric)
+    - [Password](#password)
     - [Uid](#uid)
     - [Url](#url)
 
@@ -176,6 +178,7 @@ Below is a list of available validation data types and their functions:
 
 - [Str](#str)
 - [Arr](#arr)
+- [ArrList](#arrlist)
 - [Collection](#collection)
 - [Dictionary](#dictionary)
 - [Boolean](#boolean)
@@ -185,6 +188,7 @@ Below is a list of available validation data types and their functions:
 - [Floating](#floating)
 - [Integer](#integer)
 - [Numeric](#numeric)
+- [Password](#password)
 - [Uid](#uid)
 - [Url](#url)
 
@@ -222,10 +226,13 @@ $validator->setData([
 - `in(array $values): self`
 - `notIn(array $values): self`
 - `regex(string $pattern): self`
-- `startsWith(string $prefix): self`
-- `endsWith(string $suffix): self`
-- `doesNotStartWith(string $prefix): self`
-- `doesNotEndWith(string $suffix): self`
+- `matchAlpha(): self`
+- `matchAlphaNum(): self`
+- `matchAlphaDash(): self`
+- `startsWidth(string $needle): self`
+- `endsWidth(string $needle): self`
+- `doesNotStartWidth(string $needle): self`
+- `doesNotEndWidth(string $needle): self`
 - `exists(string $table, string|null $column = null, Closure|null $query = null): self`
 - `unique(string $table, string|null $column = null, Closure|null $query = null): self`
 
@@ -267,6 +274,40 @@ $validator->setData([
 - `min(int $limit): self`
 - `max(int $limit): self`
 - `size(int $limit): self`
+
+### ArrList
+
+The `ArrList` type allows you to validate list arrays (`array_is_list`) where each item must match a scalar definition.
+
+```php
+use Phenix\Validation\Validator;
+use Phenix\Validation\Types\ArrList;
+use Phenix\Validation\Types\Str;
+
+$validator = new Validator();
+
+$validator->setRules([
+    'weekdays' => ArrList::required()
+        ->min(1)
+        ->define(Str::required()->matchAlpha()),
+]);
+
+$validator->setData([
+    'weekdays' => ['Monday', 'Tuesday'],
+]);
+
+// Handle valid data
+```
+
+#### ArrList methods
+
+- `required(): static`
+- `optional(): static`
+- `nullable(): static`
+- `define(Scalar $definition): self`
+- `min(int $limit): static`
+- `max(int $limit): static`
+- `size(int $limit): static`
 
 ### Collection
 
@@ -379,7 +420,7 @@ The `Date` type allows you to validate date values, ensuring that the data being
 ```php
 use Phenix\Validation\Validator;
 use Phenix\Validation\Types\Date;
-use Phenix\Utils\Date as DateTime;
+use Phenix\Util\Date as DateTime;
 
 $validator = new Validator();
 
@@ -405,6 +446,16 @@ $validator->setData([
 - `before(DateTimeInterface|string $date): self`
 - `beforeOrEqual(DateTimeInterface|string $date): self`
 - `format(string $format): self`
+- `equalToday(): self`
+- `afterToday(): self`
+- `beforeToday(): self`
+- `afterOrEqualToday(): self`
+- `beforeOrEqualToday(): self`
+- `equalTo(string $field): self`
+- `afterTo(string $field): self`
+- `beforeTo(string $field): self`
+- `afterOrEqualTo(string $field): self`
+- `beforeOrEqualTo(string $field): self`
 - `exists(string $table, string|null $column = null, Closure|null $query = null): self`
 - `unique(string $table, string|null $column = null, Closure|null $query = null): self`
 
@@ -524,7 +575,7 @@ $validator->setData([
 - `digits(int $length): self`
 - `decimals(int $length): self`
 - `digitsBetween(int $min, int $max): self`
-- `decimalsBetween(int $min, int $max): self`
+- `decimalsBetween(int $digits, int|null $decimals = null): self`
 
 ### Integer
 
@@ -595,6 +646,96 @@ $validator->setData([
 - `exists(string $table, string|null $column = null, Closure|null $query = null): self`
 - `unique(string $table, string|null $column = null, Closure|null $query = null): self`
 
+### Password
+
+The `Password` type extends `Str` and adds first-class password-specific rules through `secure()` and `confirmed()`.
+
+By default, `secure()` enforces a strong password policy:
+
+- minimum length: 12
+- maximum length: 48
+- must include at least one lowercase letter, one uppercase letter, one number, and one symbol
+
+When calling `secure(false)`, the default policy becomes relaxed:
+
+- minimum length: 8
+- maximum length: 12
+- no complexity regex is applied
+
+```php
+use Phenix\Validation\Validator;
+use Phenix\Validation\Types\Password;
+
+$password = 'StrongP@ssw0rd!!';
+
+$validator = new Validator();
+
+$validator->setRules([
+    'password' => Password::required()->secure()->confirmed(),
+]);
+
+$validator->setData([
+    'password' => $password,
+    'password_confirmation' => $password,
+]);
+
+// Handle valid data
+```
+
+Relaxed policy:
+
+```php
+$validator->setRules([
+    'password' => Password::required()->secure(false)->confirmed(),
+]);
+```
+
+Dynamic policy with closure:
+
+```php
+$enforceStrongPasswords = true;
+
+$validator->setRules([
+    'password' => Password::required()
+        ->secure(fn (): bool => $enforceStrongPasswords)
+        ->confirmed(),
+]);
+```
+
+Custom confirmation field:
+
+```php
+$validator->setRules([
+    'password' => Password::required()->secure()->confirmed('password_repeat'),
+]);
+
+$validator->setData([
+    'password' => 'StrongP@ssw0rd!!',
+    'password_repeat' => 'StrongP@ssw0rd!!',
+]);
+```
+
+#### Password methods
+
+- `required(): static`
+- `optional(): static`
+- `nullable(): static`
+- `secure(Closure|bool $enforce = true): self`
+- `confirmed(string $confirmationField = 'password_confirmation'): self`
+- `min(int $limit): self`
+- `max(int $limit): self`
+- `size(int $limit): self`
+- `regex(string $pattern): self`
+- `matchAlpha(): self`
+- `matchAlphaNum(): self`
+- `matchAlphaDash(): self`
+- `in(array $values): self`
+- `notIn(array $values): self`
+- `startsWidth(string $needle): self`
+- `endsWidth(string $needle): self`
+- `doesNotStartWidth(string $needle): self`
+- `doesNotEndWidth(string $needle): self`
+
 ### Uid
 
 The `Uid` type allows you to validate unique identifiers such as UUIDs and ULIDs. This class extends `Str`, inheriting its functionality and providing additional rules for UID validation.
@@ -616,7 +757,7 @@ $validator->setData([
 // Handle valid data
 ```
 
-### Uid methods
+#### Uid methods
 
 - `required(): static`
 - `optional(): static`
@@ -647,12 +788,10 @@ $validator->setData([
 // Handle valid data
 ```
 
-### Url methods
+#### Url methods
 
 - `required(): static`
 - `optional(): static`
 - `nullable(): static`
 - `exists(string $table, string|null $column = null, Closure|null $query = null): self`
 - `unique(string $table, string|null $column = null, Closure|null $query = null): self`
-
-
