@@ -189,8 +189,6 @@ Views can use `trans(...)` directly, and custom directives can delegate to the s
 ## Notes and Current Behaviors
 
 - Missing keys return the key itself (for example, `users.unknown`).
-- `trans()` helper does not accept a locale parameter. Use `Translator::get($key, $replace, $locale)` when you need an explicit locale.
-- `trans_choice()` helper signature accepts `int` count. If you need `array|Countable|int`, use `Translator::choice(...)` directly.
 - For pluralization, if `count` is not provided in replacements, the translator injects `count` automatically.
 - Catalogue loading scans `lang/{locale}/*.php` group files and only loads files that return arrays.
 - If `lang` directory does not exist, translation calls safely return keys.

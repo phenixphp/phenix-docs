@@ -47,6 +47,7 @@ export default defineConfig({
             { text: 'Views', link: '/guide/views' },
             { text: 'Translation', link: '/guide/translation' },
             { text: 'Mailing', link: '/guide/mailing' },
+            { text: 'Helpers', link: '/guide/helpers' },
           ]
         }
       ]
