@@ -7,6 +7,9 @@
 - [Form request validation](#form-request-validation)
     - [Creating a Form Request](#creating-a-form-request)
     - [Define validation rules](#define-validation-rules)
+- [Generating custom validation components](#generating-custom-validation-components)
+    - [Create a custom rule](#create-a-custom-rule)
+    - [Create a custom type](#create-a-custom-type)
 - [Available validation types](#available-validation-types)
     - [Str](#str)
     - [Arr](#arr)
@@ -169,6 +172,112 @@ public function store(StoreUserRequest $request): Response
     }
 
     return response()->json([], HttpStatus::SERVICE_UNAVAILABLE);
+}
+```
+
+## Generating custom validation components
+
+Phenix provides two console commands to scaffold custom validation classes:
+
+- `make:rule`: creates a custom validation rule in `app/Validation/Rules`.
+- `make:type`: creates a custom validation type in `app/Validation/Types`.
+
+### Create a custom rule
+
+Use `make:rule` with a required `name` argument:
+
+```sh
+php phenix make:rule AwesomeRule
+```
+
+Generated file:
+
+```txt
+app/Validation/Rules/AwesomeRule.php
+```
+
+Nested namespaces are supported using slash notation:
+
+```sh
+php phenix make:rule Admin/TestRule
+```
+
+This generates:
+
+```txt
+app/Validation/Rules/Admin/TestRule.php
+```
+
+Use `--force` (or `-f`) to overwrite:
+
+```sh
+php phenix make:rule TestRule --force
+```
+
+Generated base class:
+
+```php
+use Phenix\Validation\Rules\Rule;
+
+class AwesomeRule extends Rule
+{
+    public function passes(): bool
+    {
+        return true;
+    }
+
+    public function message(): string|null
+    {
+        return trans('validation.custom', ['field' => $this->getFieldForHumans()]);
+    }
+}
+```
+
+### Create a custom type
+
+Use `make:type` with a required `name` argument:
+
+```sh
+php phenix make:type AwesomeType
+```
+
+Generated file:
+
+```txt
+app/Validation/Types/AwesomeType.php
+```
+
+Nested namespaces are supported:
+
+```sh
+php phenix make:type Admin/TestType
+```
+
+This generates:
+
+```txt
+app/Validation/Types/Admin/TestType.php
+```
+
+Use `--force` (or `-f`) to overwrite:
+
+```sh
+php phenix make:type TestType --force
+```
+
+Generated base class:
+
+```php
+use Phenix\Validation\Rules\IsString;
+use Phenix\Validation\Rules\TypeRule;
+use Phenix\Validation\Types\Scalar;
+
+class AwesomeType extends Scalar
+{
+    protected function defineType(): TypeRule
+    {
+        return IsString::new();
+    }
 }
 ```
 
