@@ -39,6 +39,7 @@ export default defineConfig({
             { text: 'Query builder', link: '/guide/query_builder' },
             { text: 'ORM', link: '/guide/orm' },
             { text: 'Filesystem', link: '/guide/filesystem' },
+            { text: 'Caching', link: '/guide/caching' },
             { text: 'Crypto', link: '/guide/crypto' },
             { text: 'Tasks', link: '/guide/tasks' },
             { text: 'Queues', link: '/guide/queues' },
