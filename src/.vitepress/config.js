@@ -10,6 +10,9 @@ export default defineConfig({
     ['link', { rel: 'icon', href: '/favicon.webp' }]
   ],
   themeConfig: {
+    search: {
+      provider: 'local'
+    },
     nav: [
       {
         text: 'Guide',
