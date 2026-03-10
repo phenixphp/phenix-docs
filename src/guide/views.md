@@ -347,19 +347,15 @@ use Phenix\Facades\View;
 View::directive('datetime', function (string $expression): string {
     return "<?php echo {$expression}->format('d/m/Y H:i'); ?>";
 });
-
-// Directive for translation
-View::directive('trans', function (string $key): string {
-    return "<?php echo trans({$key}); ?>";
-});
 ```
 
 Usage in views:
 
 ```php
 <p>Registration date: @datetime($user->createdAt)</p>
-<h1>@trans('welcome.title')</h1>
 ```
+
+For language files, pluralization, fallback locale, and runtime locale switching, see the [Translation guide](/guide/translation).
 
 ## Including Sub-Views
 

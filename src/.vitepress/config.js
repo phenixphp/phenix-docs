@@ -44,6 +44,7 @@ export default defineConfig({
             { text: 'Queues', link: '/guide/queues' },
             { text: 'Events', link: '/guide/events' },
             { text: 'Views', link: '/guide/views' },
+            { text: 'Translation', link: '/guide/translation' },
             { text: 'Mailing', link: '/guide/mailing' },
           ]
         }
