@@ -27,6 +27,8 @@ These are configured in `config/app.php`:
 'server_mode' => env('APP_SERVER_MODE', static fn (): string => 'single'),
 ```
 
+For CORS configuration, see [CORS (`HandleCors`)](middlewares.md#cors-handlecors) in the Middlewares guide.
+
 ## App Mode
 
 `app.app_mode` supports:
