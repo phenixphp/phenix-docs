@@ -38,6 +38,7 @@ export default defineConfig({
             { text: 'Providers', link: '/guide/providers' },
             { text: 'Routing', link: '/guide/routing' },
             { text: 'Controllers', link: '/guide/controllers' },
+            { text: 'Middlewares', link: '/guide/middlewares' },
             { text: 'Validation', link: '/guide/validation' },
             { text: 'Migrations', link: '/guide/migrations' },
             { text: 'Seeders', link: '/guide/seeders' },
