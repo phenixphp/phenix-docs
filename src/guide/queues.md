@@ -232,63 +232,6 @@ Generated migration filename:
 
 `redis` uses Redis data structures and Lua scripts for atomic pop/reserve/retry/fail behavior.
 
-## Testing Queue Tasks
-
-### Queue Logging
-
-```php
-use App\Tasks\SendWelcomeEmail;
-use Phenix\Facades\Queue;
-
-Queue::log();
-Queue::push(new SendWelcomeEmail());
-
-$log = Queue::getQueueLog();
-
-Queue::resetQueueLog();
-```
-
-### Faking Queue Pushes
-
-```php
-use App\Tasks\SendWelcomeEmail;
-use Phenix\Data\Collection;
-use Phenix\Facades\Queue;
-
-Queue::fake();
-Queue::fakeOnly(SendWelcomeEmail::class);
-Queue::fakeExcept(SendWelcomeEmail::class);
-Queue::fakeOnce(SendWelcomeEmail::class);
-Queue::fakeTimes(SendWelcomeEmail::class, 2);
-
-Queue::fakeWhen(SendWelcomeEmail::class, function (Collection $log): bool {
-    return $log->count() < 3;
-});
-
-Queue::resetFaking();
-```
-
-### Queue Assertions
-
-```php
-Queue::expect(SendWelcomeEmail::class)->toBePushed();
-Queue::expect(SendWelcomeEmail::class)->toBePushedTimes(1);
-Queue::expect(SendWelcomeEmail::class)->toNotBePushed();
-Queue::expect(SendWelcomeEmail::class)->toPushNothing();
-```
-
-Predicate assertion:
-
-```php
-Queue::expect(SendWelcomeEmail::class)->toBePushed(function ($task): bool {
-    return $task !== null && $task->getQueueName() === 'emails';
-});
-```
-
-### Production Behavior
-
-Queue log/fake helpers are intentionally ignored in production environment.
-
 ## CLI Commands
 
 ```sh
@@ -367,3 +310,61 @@ return [
   - `resetFaking()`
 - Assertions helper:
   - `expect(string $taskClass): Phenix\Testing\TestQueue`
+
+## Testing Queue Tasks
+
+### Queue Logging
+
+```php
+use App\Tasks\SendWelcomeEmail;
+use Phenix\Facades\Queue;
+
+Queue::log();
+Queue::push(new SendWelcomeEmail());
+
+$log = Queue::getQueueLog();
+
+Queue::resetQueueLog();
+```
+
+### Faking Queue Pushes
+
+```php
+use App\Tasks\SendWelcomeEmail;
+use Phenix\Data\Collection;
+use Phenix\Facades\Queue;
+
+Queue::fake();
+Queue::fakeOnly(SendWelcomeEmail::class);
+Queue::fakeExcept(SendWelcomeEmail::class);
+Queue::fakeOnce(SendWelcomeEmail::class);
+Queue::fakeTimes(SendWelcomeEmail::class, 2);
+
+Queue::fakeWhen(SendWelcomeEmail::class, function (Collection $log): bool {
+    return $log->count() < 3;
+});
+
+Queue::resetFaking();
+```
+
+### Queue Assertions
+
+```php
+Queue::expect(SendWelcomeEmail::class)->toBePushed();
+Queue::expect(SendWelcomeEmail::class)->toBePushedTimes(1);
+Queue::expect(SendWelcomeEmail::class)->toNotBePushed();
+Queue::expect(SendWelcomeEmail::class)->toPushNothing();
+```
+
+Predicate assertion:
+
+```php
+Queue::expect(SendWelcomeEmail::class)->toBePushed(function ($task): bool {
+    return $task !== null && $task->getQueueName() === 'emails';
+});
+```
+
+### Production Behavior
+
+Queue log/fake helpers are intentionally ignored in production environment.
+

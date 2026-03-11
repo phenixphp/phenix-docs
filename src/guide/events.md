@@ -425,35 +425,6 @@ Event::resetFaking();
 
 In production environment, faking/logging methods are intentionally ignored.
 
-## Testing Event Dispatch
-
-Use `Event::expect('event.name')` assertions:
-
-```php
-use Phenix\Facades\Event;
-
-Event::log();
-Event::emit('user.registered', ['id' => 1]);
-
-Event::expect('user.registered')->toBeDispatched();
-Event::expect('user.registered')->toBeDispatchedTimes(1);
-Event::expect('other.event')->toNotBeDispatched();
-```
-
-Predicate assertions:
-
-```php
-Event::expect('user.registered')->toBeDispatched(function ($event): bool {
-    return $event !== null && ($event->getPayload()['id'] ?? null) === 1;
-});
-```
-
-Assert that nothing was dispatched:
-
-```php
-Event::expect('any.event')->toDispatchNothing();
-```
-
 ## Event CLI Commands
 
 Create event class:
@@ -506,3 +477,33 @@ php phenix make:listener SendWelcomeEmail -f
   - `resetFaking(): void`
 - Assertions helper:
   - `expect(string $event): Phenix\Testing\TestEvent`
+
+## Testing Event Dispatch
+
+Use `Event::expect('event.name')` assertions:
+
+```php
+use Phenix\Facades\Event;
+
+Event::log();
+Event::emit('user.registered', ['id' => 1]);
+
+Event::expect('user.registered')->toBeDispatched();
+Event::expect('user.registered')->toBeDispatchedTimes(1);
+Event::expect('other.event')->toNotBeDispatched();
+```
+
+Predicate assertions:
+
+```php
+Event::expect('user.registered')->toBeDispatched(function ($event): bool {
+    return $event !== null && ($event->getPayload()['id'] ?? null) === 1;
+});
+```
+
+Assert that nothing was dispatched:
+
+```php
+Event::expect('any.event')->toDispatchNothing();
+```
+

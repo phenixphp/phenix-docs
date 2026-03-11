@@ -647,119 +647,6 @@ public function build(): self
 
 The system automatically validates that attachment files exist. If a file doesn't exist, an exception will be thrown before attempting to send the email.
 
-## Testing
-
-PhenixPHP provides utilities for testing email sending without actually sending them.
-
-### Mail Fake
-
-Use `Mail::fake()` to intercept email sending:
-
-```php
-use Phenix\Facades\Mail;
-use App\Mail\WelcomeMail;
-
-// In your test
-Mail::fake();
-
-// Code that sends emails
-$user = User::factory()->create();
-Mail::send(new WelcomeMail($user, 'https://verify.url'));
-
-// Verifications (see next section)
-```
-
-### Assertions
-
-After using `Mail::fake()`, you can make assertions about sent emails:
-
-```php
-use Phenix\Facades\Mail;
-use App\Mail\WelcomeMail;
-
-Mail::fake();
-
-// Your code that sends emails
-$service->sendWelcomeEmail($user);
-
-// Verify that a specific email was sent
-Mail::assertSent(WelcomeMail::class);
-
-// Verify it was sent to a specific recipient
-Mail::assertSent(WelcomeMail::class, function ($mail) use ($user) {
-    return $mail->hasTo($user->email);
-});
-
-// Verify an email was NOT sent
-Mail::assertNotSent(PasswordResetMail::class);
-
-// Verify the number of emails sent
-Mail::assertSentCount(WelcomeMail::class, 1);
-```
-
-### Verifying Sends
-
-You can get the emails sent during the test:
-
-```php
-Mail::fake();
-
-// Send emails
-Mail::send(new WelcomeMail($user1, 'url1'));
-Mail::send(new WelcomeMail($user2, 'url2'));
-
-// Get all sends
-$sent = Mail::getSendingLog();
-
-// Verify manually
-$this->assertCount(2, $sent);
-$this->assertEquals($user1->email, $sent[0]['to']);
-```
-
-**Complete Test Example:**
-
-```php
-use PHPUnit\Framework\TestCase;
-use Phenix\Facades\Mail;
-use App\Mail\WelcomeMail;
-use App\Services\UserService;
-
-class UserServiceTest extends TestCase
-{
-    public function test_welcome_email_is_sent_on_registration(): void
-    {
-        Mail::fake();
-
-        $service = new UserService();
-        $user = $service->register([
-            'name' => 'John Doe',
-            'email' => 'john@example.com',
-            'password' => 'secret123',
-        ]);
-
-        // Verify that the welcome email was sent
-        Mail::assertSent(WelcomeMail::class, function ($mail) use ($user) {
-            return $mail->hasTo($user->email) &&
-                   $mail->user->id === $user->id;
-        });
-    }
-
-    public function test_welcome_email_contains_verification_url(): void
-    {
-        Mail::fake();
-
-        $user = User::factory()->create();
-        $verificationUrl = 'https://app.com/verify/abc123';
-
-        Mail::send(new WelcomeMail($user, $verificationUrl));
-
-        $sent = Mail::getSendingLog();
-        $this->assertCount(1, $sent);
-        $this->assertStringContainsString('verify/abc123', $sent[0]['body']);
-    }
-}
-```
-
 ## Available Transports
 
 PhenixPHP supports the following transports:
@@ -1011,3 +898,117 @@ class OrderConfirmationTest extends TestCase
     }
 }
 ```
+
+## Testing
+
+PhenixPHP provides utilities for testing email sending without actually sending them.
+
+### Mail Fake
+
+Use `Mail::fake()` to intercept email sending:
+
+```php
+use Phenix\Facades\Mail;
+use App\Mail\WelcomeMail;
+
+// In your test
+Mail::fake();
+
+// Code that sends emails
+$user = User::factory()->create();
+Mail::send(new WelcomeMail($user, 'https://verify.url'));
+
+// Verifications (see next section)
+```
+
+### Assertions
+
+After using `Mail::fake()`, you can make assertions about sent emails:
+
+```php
+use Phenix\Facades\Mail;
+use App\Mail\WelcomeMail;
+
+Mail::fake();
+
+// Your code that sends emails
+$service->sendWelcomeEmail($user);
+
+// Verify that a specific email was sent
+Mail::assertSent(WelcomeMail::class);
+
+// Verify it was sent to a specific recipient
+Mail::assertSent(WelcomeMail::class, function ($mail) use ($user) {
+    return $mail->hasTo($user->email);
+});
+
+// Verify an email was NOT sent
+Mail::assertNotSent(PasswordResetMail::class);
+
+// Verify the number of emails sent
+Mail::assertSentCount(WelcomeMail::class, 1);
+```
+
+### Verifying Sends
+
+You can get the emails sent during the test:
+
+```php
+Mail::fake();
+
+// Send emails
+Mail::send(new WelcomeMail($user1, 'url1'));
+Mail::send(new WelcomeMail($user2, 'url2'));
+
+// Get all sends
+$sent = Mail::getSendingLog();
+
+// Verify manually
+$this->assertCount(2, $sent);
+$this->assertEquals($user1->email, $sent[0]['to']);
+```
+
+**Complete Test Example:**
+
+```php
+use PHPUnit\Framework\TestCase;
+use Phenix\Facades\Mail;
+use App\Mail\WelcomeMail;
+use App\Services\UserService;
+
+class UserServiceTest extends TestCase
+{
+    public function test_welcome_email_is_sent_on_registration(): void
+    {
+        Mail::fake();
+
+        $service = new UserService();
+        $user = $service->register([
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'password' => 'secret123',
+        ]);
+
+        // Verify that the welcome email was sent
+        Mail::assertSent(WelcomeMail::class, function ($mail) use ($user) {
+            return $mail->hasTo($user->email) &&
+                   $mail->user->id === $user->id;
+        });
+    }
+
+    public function test_welcome_email_contains_verification_url(): void
+    {
+        Mail::fake();
+
+        $user = User::factory()->create();
+        $verificationUrl = 'https://app.com/verify/abc123';
+
+        Mail::send(new WelcomeMail($user, $verificationUrl));
+
+        $sent = Mail::getSendingLog();
+        $this->assertCount(1, $sent);
+        $this->assertStringContainsString('verify/abc123', $sent[0]['body']);
+    }
+}
+```
+
