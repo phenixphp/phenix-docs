@@ -27,12 +27,12 @@
 - [Attachments](#attachments)
   - [Attaching Files](#attaching-files)
   - [Multiple Attachments](#multiple-attachments)
+- [Available Transports](#available-transports)
+- [CLI Commands](#cli-commands)
 - [Testing](#testing)
   - [Mail Fake](#mail-fake)
   - [Assertions](#assertions)
   - [Verifying Sends](#verifying-sends)
-- [Available Transports](#available-transports)
-- [CLI Commands](#cli-commands)
 
 ## Introduction
 
@@ -1011,4 +1011,3 @@ class UserServiceTest extends TestCase
     }
 }
 ```
-

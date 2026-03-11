@@ -22,14 +22,14 @@
     - [Parallel Driver](#parallel-driver)
     - [Database Driver](#database-driver)
     - [Redis Driver](#redis-driver)
+- [CLI Commands](#cli-commands)
+- [Configuration Reference](#configuration-reference)
+- [Queue Facade Reference](#queue-facade-reference)
 - [Testing Queue Tasks](#testing-queue-tasks)
     - [Queue Logging](#queue-logging)
     - [Faking Queue Pushes](#faking-queue-pushes)
     - [Queue Assertions](#queue-assertions)
     - [Production Behavior](#production-behavior)
-- [CLI Commands](#cli-commands)
-- [Configuration Reference](#configuration-reference)
-- [Queue Facade Reference](#queue-facade-reference)
 
 ## Introduction
 
@@ -367,4 +367,3 @@ Queue::expect(SendWelcomeEmail::class)->toBePushed(function ($task): bool {
 ### Production Behavior
 
 Queue log/fake helpers are intentionally ignored in production environment.
-

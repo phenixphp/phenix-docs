@@ -33,9 +33,9 @@
     - [Fake All Except](#fake-all-except)
     - [Reset Faking State](#reset-faking-state)
     - [Production Behavior](#production-behavior)
-- [Testing Event Dispatch](#testing-event-dispatch)
 - [Event CLI Commands](#event-cli-commands)
 - [Facade API Reference](#facade-api-reference)
+- [Testing Event Dispatch](#testing-event-dispatch)
 
 ## Introduction
 
@@ -506,4 +506,3 @@ Assert that nothing was dispatched:
 ```php
 Event::expect('any.event')->toDispatchNothing();
 ```
-
