@@ -86,7 +86,7 @@ Once the migrations have been run, you will see output like the following:
 
 ```bash
 using migration paths
- - /home/obarbosa/php/phenix/database/migrations
+ - /home/username/php/phenix/database/migrations
 using seed paths
 using environment default
 using database phenix
@@ -145,9 +145,9 @@ When the data has been inserted, you will see a result like the following:
 
 ```bash
 using migration paths
- - /home/obarbosa/php/phenix/database/migrations
+ - /home/username/php/phenix/database/migrations
 using seed paths
- - /home/obarbosa/php/phenix/database/seeds
+ - /home/username/php/phenix/database/seeds
 warning no environment specified, defaulting to: default
 using database phenix
 
@@ -174,10 +174,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use Amp\Http\Server\Request;
-use Amp\Http\Server\Response;
-use Amp\Http\HttpStatus;
 use Phenix\Http\Controller;
+use Phenix\Http\Constants\HttpStatus;
+use Phenix\Http\Request;
+use Phenix\Http\Response;
 
 class UserController extends Controller
 {
@@ -208,6 +208,8 @@ class UserController extends Controller
 }
 ```
 
+For a complete reference of controllers and request handling, see the [Controllers guide](controllers.md).
+
 ### The index method
 
 This method allows us to obtain all the users created in the database. At this point, we have two options: the query brings all the data, or the most optimal and common, paginate the records. The first step will be to register the user index route in the `routes/api.php` file:
@@ -218,7 +220,8 @@ use Phenix\Facades\Route;
 
 // ...
 
-Route::get('/users', [UserController::class, 'index']);
+Route::get('/users', [UserController::class, 'index'])
+    ->name('users.index');
 ```
 
 If you see any similarity with Laravel routes, it's not a coincidence; the elegant syntax inspires us all.
@@ -287,7 +290,8 @@ At this point, you can use a client like **Postman** or **Thunder** integrated a
 The store method will allow us to add new users. Let's write the code. Corresponding route:
 
 ```php
-Route::post('/users', [UserController::class, 'store']);
+Route::post('/users', [UserController::class, 'store'])
+    ->name('users.store');
 ```
 
 Because we are using the query builder, first the insertion is executed and then a query to obtain the inserted record.
@@ -331,7 +335,8 @@ Again, use your favorite client and send the necessary data to create a user. Th
 This method will help us when we want to consult a record by its identifier:
 
 ```php
-Route::get('/users/{user}', [UserController::class, 'show']);
+Route::get('/users/{user}', [UserController::class, 'show'])
+    ->name('users.show');
 ```
 
 **Remember** that every time we make changes to our code, we must restart the server.
@@ -342,7 +347,7 @@ use App\Models\User;
 public function show(Request $request): Response
 {
     $user = User::query()
-        ->whereEqual('id', $request()->route()->integer('user'))
+        ->whereEqual('id', $request->route()->integer('user'))
         ->first();
 
     return response()->json($user, HttpStatus::OK);
@@ -366,7 +371,8 @@ The JSON response:
 Now let's update the existing records:
 
 ```php
-Route::patch('/users/{user}', [UserController::class, 'update']);
+Route::patch('/users/{user}', [UserController::class, 'update'])
+    ->name('users.update');
 ```
 
 We will only update the **name** for practical purposes.
@@ -404,7 +410,8 @@ The client will respond to us with updated data:
 Finally, the method to delete records from the database:
 
 ```php
-Route::delete('/users/{user}', [UserController::class, 'delete']);
+Route::delete('/users/{user}', [UserController::class, 'delete'])
+    ->name('users.delete');
 ```
 
 The response will be a simple message:
