@@ -311,7 +311,15 @@ Route::middleware(AcceptJsonResponses::class)
 
 ## Route middlewares
 
-Middleware allows you to alter the flow of a request, perform validations, and return responses, all using the chain of responsibility design pattern. You can assign one or many middlewares to your routes.
+Route middlewares are the most specific middleware layer. Use them when behavior should run only for selected endpoints.
+
+Scope model:
+
+- **Global** (`app.middlewares.global`): runs before the router handles the request and applies to any incoming request.
+- **Router** (`app.middlewares.router`): applies to all routes.
+- **Route/Group** (`->middleware(...)`, `Route::middleware(...)->group(...)`): applies only to selected routes.
+
+For middleware execution order and registration details in `config/app.php`, see the [Middlewares guide](middlewares.md).
 
 ```php
 Route::get('/users/{user}', function (Request $request) {
@@ -320,4 +328,9 @@ Route::get('/users/{user}', function (Request $request) {
     SanitizeRequest::class,
     CheckUserIsAdmin::class,
 ]);
+
+Route::middleware(Authenticated::class)
+    ->group(function (Route $route) {
+        $route->get('/profile', fn () => response()->plain('Profile'));
+    });
 ```
