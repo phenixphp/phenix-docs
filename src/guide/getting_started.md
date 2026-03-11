@@ -414,6 +414,8 @@ Route::delete('/users/{user}', [UserController::class, 'delete'])
     ->name('users.delete');
 ```
 
+For advanced route features such as groups, middleware, and signatures, see the [Routing guide](routing.md).
+
 The response will be a simple message:
 
 ```php
