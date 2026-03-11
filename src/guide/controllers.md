@@ -4,12 +4,19 @@
 
 - [Writing controllers](#writing-controllers)
     - [API Controllers](#api-controllers)
+- [Request in controller actions](#request-in-controller-actions)
+- [Form Requests in controllers](#form-requests-in-controllers)
+    - [Creating a Form Request](#creating-a-form-request)
+    - [Using Form Request in a controller](#using-form-request-in-a-controller)
+    - [Streamed FormRequest](#streamed-formrequest)
 - [Routes](#routes)
 - [Responses](#responses)
     - [Plain responses](#plain-responses)
     - [JSON responses](#json-responses)
 
 Routes can receive an anonymous function or callback as a request handler, but you can group handlers into classes, which constitute controllers. The controllers are stored in the `app\Http\Controllers` folder.
+
+Controller actions receive `Phenix\Http\Request`, which is a wrapper around `Amp\Http\Server\Request`.
 
 ## Writing controllers
 
@@ -28,10 +35,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use Amp\Http\Server\Request;
-use Amp\Http\Server\Response;
-use Amp\Http\Status;
+use Phenix\Http\Constants\HttpStatus;
 use Phenix\Http\Controller;
+use Phenix\Http\Request;
+use Phenix\Http\Response;
 
 class UserController extends Controller
 {
@@ -54,10 +61,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use Amp\Http\Server\Request;
-use Amp\Http\Server\Response;
-use Amp\Http\HttpStatus;
+use Phenix\Http\Constants\HttpStatus;
 use Phenix\Http\Controller;
+use Phenix\Http\Request;
+use Phenix\Http\Response;
 
 class UserController extends Controller
 {
@@ -88,6 +95,164 @@ class UserController extends Controller
 }
 ```
 
+## Request in controller actions
+
+The request wrapper provides helpers for route attributes, query parameters, and body parsing:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers;
+
+use Phenix\Http\Controller;
+use Phenix\Http\Request;
+use Phenix\Http\Response;
+
+class UserController extends Controller
+{
+    public function show(Request $request): Response
+    {
+        $userId = $request->route()->integer('user');
+        $include = $request->query('include', '');
+        $name = $request->body('name');
+
+        return response()->json([
+            'id' => $userId,
+            'include' => $include,
+            'name' => $name,
+        ]);
+    }
+}
+```
+
+Route parameters are available through `$request->route(...)`.
+
+## Form Requests in controllers
+
+Form Requests extend `Phenix\Http\FormRequest` and let you keep validation rules in a dedicated class.
+
+### Creating a Form Request
+
+Use the `make:request` command:
+
+```sh
+php phenix make:request StoreUserRequest
+```
+
+Generated class:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Requests;
+
+use Phenix\Http\FormRequest;
+
+class StoreUserRequest extends FormRequest
+{
+    protected function rules(): array
+    {
+        return [];
+    }
+}
+```
+
+For a complete validation workflow, see the [Validation guide](validation.md#form-request-validation).
+
+Example with a validation rule:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Requests;
+
+use Phenix\Http\FormRequest;
+use Phenix\Validation\Types\Str;
+
+class StoreUserRequest extends FormRequest
+{
+    protected function rules(): array
+    {
+        return [
+            'name' => Str::required()->max(10),
+        ];
+    }
+}
+```
+
+### Using Form Request in a controller
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\StoreUserRequest;
+use Phenix\Http\Constants\HttpStatus;
+use Phenix\Http\Controller;
+use Phenix\Http\Response;
+
+class UserController extends Controller
+{
+    public function store(StoreUserRequest $request): Response
+    {
+        $data = $request->validated();
+
+        return response()->json($data, HttpStatus::CREATED);
+    }
+}
+```
+
+When the first parameter of the action is a class that extends `FormRequest`, Phenix resolves and validates it automatically before running the action:
+
+- If validation fails, the framework responds with JSON and `422 Unprocessable Entity`.
+- If validation passes, the action executes and you can access `$request->validated()`.
+
+`FormRequest` also exposes:
+
+- `rules(): array`
+- `isValid(): bool`
+- `errors(): array`
+- `validated(): array`
+
+### Streamed FormRequest
+
+For large multipart payloads or file uploads, you can use streamed parsing mode:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Requests;
+
+use Phenix\Http\Constants\RequestMode;
+use Phenix\Http\FormRequest;
+
+class UploadUserAvatarRequest extends FormRequest
+{
+    protected function rules(): array
+    {
+        return [
+            // ...
+        ];
+    }
+
+    protected function mode(): RequestMode
+    {
+        return RequestMode::STREAMED;
+    }
+}
+```
+
 ## Routes
 
 Now we can define routes. It is important to maintain good consistency between the defined methods and the routes:
@@ -97,19 +262,26 @@ Now we can define routes. It is important to maintain good consistency between t
 
 declare(strict_types=1);
 
-use Phenix\Facades\Route;
 use App\Http\Controllers\UserController;
+use Phenix\Facades\Route;
 
-Route::get('/users', [UserController::class, 'index']);
+Route::get('/users', [UserController::class, 'index'])
+    ->name('users.index');
 
-Route::post('/users', [UserController::class, 'store']);
+Route::post('/users', [UserController::class, 'store'])
+    ->name('users.store');
 
-Route::get('/users/{user}', [UserController::class, 'show']);
+Route::get('/users/{user}', [UserController::class, 'show'])
+    ->name('users.show');
 
-Route::patch('/users/{user}', [UserController::class, 'update']);
+Route::patch('/users/{user}', [UserController::class, 'update'])
+    ->name('users.update');
 
-Route::delete('/users/{user}', [UserController::class, 'delete']);
+Route::delete('/users/{user}', [UserController::class, 'delete'])
+    ->name('users.delete');
 ```
+
+For advanced route features such as groups, middleware, and signatures, see the [Routing guide](routing.md).
 
 ## Responses
 
@@ -126,7 +298,7 @@ return response()->plain('Hello, world!' . PHP_EOL);
 Response with custom HTTP status code:
 
 ```php
-use Amp\Http\HttpStatus;
+use Phenix\Http\Constants\HttpStatus;
 
 return response()->plain('Hello, world!' . PHP_EOL, HttpStatus::OK);
 ```
