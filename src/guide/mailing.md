@@ -80,7 +80,7 @@ return [
 
 **Environment Variables:**
 
-```env
+```text
 # .env
 MAIL_MAILER=smtp
 MAIL_HOST=smtp.mailgun.org
@@ -122,7 +122,7 @@ Configuration for Amazon Simple Email Service:
 
 **Environment Variables:**
 
-```env
+```text
 # .env
 MAIL_MAILER=ses
 AWS_ACCESS_KEY_ID=your_access_key
@@ -152,7 +152,7 @@ Configuration for the [Resend](https://resend.com/) service:
 
 **Environment Variables:**
 
-```env
+```text
 # .env
 MAIL_MAILER=resend
 RESEND_KEY=re_your_api_key
@@ -173,7 +173,7 @@ For local development and testing, the `log` transport records emails to logs in
 
 **Environment Variables:**
 
-```env
+```text
 # .env
 MAIL_MAILER=log
 ```

@@ -460,7 +460,7 @@ return [
 
 **Available Environment Variables:**
 
-```env
+```text
 # .env
 VIEW_PATH=/custom/path/views
 VIEW_COMPILED_PATH=/custom/path/cache
