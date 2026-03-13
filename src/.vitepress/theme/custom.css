@@ -129,15 +129,18 @@ html:not(.dark) .VPHero .name {
 
 /* Action Button Enhancements */
 .VPButton.brand {
-    background: linear-gradient(135deg, #0c96cd 0%, #00a5dc 100%);
+    background: linear-gradient(135deg, var(--phenix-blue) 0%, var(--phenix-cyan) 100%);
     color: #ffffff;
     font-weight: 700;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    text-shadow: 0 1px 1px rgba(2, 18, 51, 0.5);
     border: 1px solid rgba(0, 255, 255, 0.3);
-    box-shadow: var(--glow-blue);
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+}
+
+html:not(.dark) .VPButton.brand {
+    text-shadow: none;
 }
 
 .VPButton.brand::before {
