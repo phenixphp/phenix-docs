@@ -251,37 +251,35 @@ At this point, you can use a client like **Postman** or **Thunder** integrated a
 
 ```json
 {
-    "data": {
-        "path": "http://127.0.0.1:1337/users",
-        "current_page": 1,
-        "last_page": 1,
-        "per_page": 15,
-        "total": 2,
-        "first_page_url": "http://127.0.0.1:1337/users?page=1",
-        "last_page_url": "http://127.0.0.1:1337/users?page=1",
-        "prev_page_url": null,
-        "next_page_url": null,
-        "from": 1,
-        "to": 2,
-        "data": [
-            {
-                "id": 1,
-                "name": "Rasmus Ledford",
-                "email": "rasmus.ledford@php.net"
-            },
-            {
-                "id": 2,
-                "name": "Nikita Popov",
-                "email": "nikita.popov@php.net"
-            }
-        ],
-        "links": [
-            {
-                "url": "http://127.0.0.1:1337/users?page=1",
-                "label": 1
-            }
-        ]
-    }
+    "path": "http://127.0.0.1:1337/users",
+    "current_page": 1,
+    "last_page": 1,
+    "per_page": 15,
+    "total": 2,
+    "first_page_url": "http://127.0.0.1:1337/users?page=1",
+    "last_page_url": "http://127.0.0.1:1337/users?page=1",
+    "prev_page_url": null,
+    "next_page_url": null,
+    "from": 1,
+    "to": 2,
+    "data": [
+        {
+            "id": 1,
+            "name": "Rasmus Ledford",
+            "email": "rasmus.ledford@php.net"
+        },
+        {
+            "id": 2,
+            "name": "Nikita Popov",
+            "email": "nikita.popov@php.net"
+        }
+    ],
+    "links": [
+        {
+            "url": "http://127.0.0.1:1337/users?page=1",
+            "label": 1
+        }
+    ]
 }
 ```
 
@@ -319,11 +317,9 @@ Again, use your favorite client and send the necessary data to create a user. Th
 
 ```json
 {
-    "data": {
-        "id": 3,
-        "name": "John Doe",
-        "email": "john.doe@email.com"
-    }
+    "id": 3,
+    "name": "John Doe",
+    "email": "john.doe@email.com"
 }
 ```
 
@@ -358,11 +354,9 @@ The JSON response:
 
 ```json
 {
-    "data": {
-        "id": 3,
-        "name": "John Doe",
-        "email": "john.doe@email.com"
-    }
+    "id": 3,
+    "name": "John Doe",
+    "email": "john.doe@email.com"
 }
 ```
 
@@ -397,11 +391,9 @@ The client will respond to us with updated data:
 
 ```json
 {
-    "data": {
-        "id": 3,
-        "name": "John Edison Doe",
-        "email": "john.doe@email.com"
-    }
+    "id": 3,
+    "name": "John Edison Doe",
+    "email": "john.doe@email.com"
 }
 ```
 

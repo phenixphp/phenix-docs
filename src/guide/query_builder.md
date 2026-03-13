@@ -106,37 +106,35 @@ The `paginate` method receives a `League\Uri\Http` instance of the `Amp\Http\Ser
 
 ```json
 {
-    "data": {
-        "path": "http://127.0.0.1:1337/users",
-        "current_page": 1,
-        "last_page": 1,
-        "per_page": 15,
-        "total": 2,
-        "first_page_url": "http://127.0.0.1:1337/users?page=1",
-        "last_page_url": "http://127.0.0.1:1337/users?page=1",
-        "prev_page_url": null,
-        "next_page_url": null,
-        "from": 1,
-        "to": 2,
-        "data": [
-            {
-                "id": 1,
-                "name": "Rasmus Ledford",
-                "email": "rasmus.ledford@php.net"
-            },
-            {
-                "id": 2,
-                "name": "Nikita Popov",
-                "email": "nikita.popov@php.net"
-            }
-        ],
-        "links": [
-            {
-                "url": "http://127.0.0.1:1337/users?page=1",
-                "label": 1
-            }
-        ]
-    }
+    "path": "http://127.0.0.1:1337/users",
+    "current_page": 1,
+    "last_page": 1,
+    "per_page": 15,
+    "total": 2,
+    "first_page_url": "http://127.0.0.1:1337/users?page=1",
+    "last_page_url": "http://127.0.0.1:1337/users?page=1",
+    "prev_page_url": null,
+    "next_page_url": null,
+    "from": 1,
+    "to": 2,
+    "data": [
+        {
+            "id": 1,
+            "name": "Rasmus Ledford",
+            "email": "rasmus.ledford@php.net"
+        },
+        {
+            "id": 2,
+            "name": "Nikita Popov",
+            "email": "nikita.popov@php.net"
+        }
+    ],
+    "links": [
+        {
+            "url": "http://127.0.0.1:1337/users?page=1",
+            "label": 1
+        }
+    ]
 }
 ```
 
