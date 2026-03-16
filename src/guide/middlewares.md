@@ -6,7 +6,7 @@
 - [Execution order](#execution-order)
 - [Creating middleware](#creating-middleware)
 - [Registering global middlewares](#registering-global-middlewares)
-    - [CORS](#cors)
+    - [CORS](#cors-handlecors)
 - [Registering router middlewares](#registering-router-middlewares)
 - [Applying middlewares to routes and groups](#applying-middlewares-to-routes-and-groups)
 - [Choosing the right scope](#choosing-the-right-scope)
@@ -88,7 +88,7 @@ Use global middleware for concerns that must run before routing and for every re
 
 For `RateLimiter` configuration and behavior, see [Rate Limiting](caching.md#rate-limiting) in the Caching guide.
 
-### CORS
+### CORS (`HandleCors`)
 
 `HandleCors` is a global middleware by default, so CORS is evaluated before route handling.
 

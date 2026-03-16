@@ -38,7 +38,7 @@ A **queuable task** (`QueuableTask`) is pushed to the queue system and processed
   - Typical call: `MyTask::dispatch();`
   - Output is not returned to the caller at dispatch time.
 
-For full queue runtime details, see [Queue](/guide/queue).
+For full queue runtime details, see [Queues guide](/guide/queues).
 
 ## Generating Tasks
 

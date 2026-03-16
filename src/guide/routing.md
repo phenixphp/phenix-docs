@@ -66,7 +66,7 @@ Route::get('/users/{user}', function (Request $request) {
 });
 ```
 
-Multiple route parameters:
+### Multiple route parameters
 
 ```php
 Route::get('/invoices/{invoice}/payments/{payment}', function (Request $request) {
@@ -77,7 +77,7 @@ Route::get('/invoices/{invoice}/payments/{payment}', function (Request $request)
 });
 ```
 
-You can add patterns to route parameters:
+### Patterns in route parameters
 
 ```php
 Route::get('/users/{user:[0-9]+}', function (Request $request) {
