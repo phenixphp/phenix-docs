@@ -1,1 +1,0 @@
-Add a table of contents with h2 (##) and nested options h3 (###)
