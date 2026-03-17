@@ -3,6 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'Phenix framework',
   description: 'Phenix framework documentation',
+  appearance: 'dark',
   head: [
     ['meta', { name: 'theme-color', content: '#0077b6' }],
     ['meta', { name: 'mobile-web-app-capable', content: 'yes' }],
