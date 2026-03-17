@@ -256,7 +256,8 @@ onMounted(() => {
 @media (max-width: 768px) {
     .phoenix-container {
         width: 240px;
-        height: 240px;
+        height: 280px;
+        margin-inline: auto;
     }
 
     .glow-1 {
