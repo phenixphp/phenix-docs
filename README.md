@@ -101,7 +101,9 @@ Runs `standard --fix` on the project.
 
 The repository includes a GitHub Actions workflow at `.github/workflows/deploy-production.yml`.
 
-The workflow currently connects to the production host over SSH, but the actual deployment commands are still placeholders. Before using it in production, configure the required GitHub secrets and replace the example script with the real build and publish steps for your server.
+The production workflow builds the VitePress site in GitHub Actions and uploads the generated `src/.vitepress/dist/` files to the remote server over SCP.
+
+Configure these GitHub secrets before enabling production deploys: `SSH_HOST`, `SSH_USER`, `SSH_PRIVATE_KEY`, `SSH_PASSPHRASE`, `SSH_PORT`, `SSH_FINGERPRINT`, and `SSH_TARGET_DIR`.
 
 ## Contributing
 
