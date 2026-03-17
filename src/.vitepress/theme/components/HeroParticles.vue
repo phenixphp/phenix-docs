@@ -6,6 +6,95 @@ let animationId = null
 let particles = []
 let resizeObserver = null
 let resizeHandler = null
+let themeObserver = null
+
+const fallbackTheme = {
+    palette: [
+        { r: 0, g: 120, b: 179 },
+        { r: 0, g: 154, b: 218 },
+        { r: 56, g: 110, b: 194 },
+        { r: 74, g: 89, b: 201 }
+    ],
+    ember: { r: 12, g: 99, b: 168 },
+    emberGlow: { r: 0, g: 169, b: 214 }
+}
+
+let particleTheme = { ...fallbackTheme }
+
+function parseCssColor(value, fallback) {
+    const normalizedValue = value.trim()
+
+    if (!normalizedValue) {
+        return fallback
+    }
+
+    const hexMatch = normalizedValue.match(/^#([\da-f]{3}|[\da-f]{6})$/i)
+    if (hexMatch) {
+        const hex = hexMatch[1]
+        const segments = hex.length === 3
+            ? hex.split('').map(char => `${char}${char}`)
+            : hex.match(/.{2}/g)
+
+        return {
+            r: Number.parseInt(segments[0], 16),
+            g: Number.parseInt(segments[1], 16),
+            b: Number.parseInt(segments[2], 16)
+        }
+    }
+
+    const rgbMatch = normalizedValue.match(/^rgba?\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i)
+    if (rgbMatch) {
+        return {
+            r: Number.parseInt(rgbMatch[1], 10),
+            g: Number.parseInt(rgbMatch[2], 10),
+            b: Number.parseInt(rgbMatch[3], 10)
+        }
+    }
+
+    return fallback
+}
+
+function readParticleTheme() {
+    const rootStyles = getComputedStyle(document.documentElement)
+
+    return {
+        palette: [
+            parseCssColor(rootStyles.getPropertyValue('--phenix-particle-1'), fallbackTheme.palette[0]),
+            parseCssColor(rootStyles.getPropertyValue('--phenix-particle-2'), fallbackTheme.palette[1]),
+            parseCssColor(rootStyles.getPropertyValue('--phenix-particle-3'), fallbackTheme.palette[2]),
+            parseCssColor(rootStyles.getPropertyValue('--phenix-particle-accent'), fallbackTheme.palette[3])
+        ],
+        ember: parseCssColor(rootStyles.getPropertyValue('--phenix-ember'), fallbackTheme.ember),
+        emberGlow: parseCssColor(rootStyles.getPropertyValue('--phenix-ember-glow'), fallbackTheme.emberGlow)
+    }
+}
+
+function pickParticleColor() {
+    const colorVariation = Math.random()
+
+    if (colorVariation < 0.4) {
+        return particleTheme.palette[0]
+    }
+
+    if (colorVariation < 0.7) {
+        return particleTheme.palette[1]
+    }
+
+    if (colorVariation < 0.9) {
+        return particleTheme.palette[2]
+    }
+
+    return particleTheme.palette[3]
+}
+
+function refreshThemeColors() {
+    particleTheme = readParticleTheme()
+    particles.forEach(particle => {
+        if (typeof particle.applyTheme === 'function') {
+            particle.applyTheme()
+        }
+    })
+}
 
 class Particle {
     constructor(canvas) {
@@ -22,17 +111,11 @@ class Particle {
         this.opacity = Math.random() * 0.6 + 0.2
         this.life = 0
         this.maxLife = Math.random() * 100 + 100
+        this.applyTheme()
+    }
 
-        const colorVariation = Math.random()
-        if (colorVariation < 0.4) {
-            this.color = { r: 0, g: 212, b: 255 } // Cyan-blue
-        } else if (colorVariation < 0.7) {
-            this.color = { r: 0, g: 255, b: 255 } // Pure cyan
-        } else if (colorVariation < 0.9) {
-            this.color = { r: 100, g: 180, b: 255 } // Light blue
-        } else {
-            this.color = { r: 123, g: 44, b: 191 } // Purple accent
-        }
+    applyTheme() {
+        this.color = pickParticleColor()
     }
 
     update() {
@@ -40,12 +123,10 @@ class Particle {
         this.x += this.speedX + Math.sin(this.life * 0.05) * 0.5
         this.life++
 
-        // Fade out as particle rises
         const lifeRatio = this.life / this.maxLife
         this.opacity = (1 - lifeRatio) * 0.6
         this.size = (1 - lifeRatio * 0.5) * (Math.random() * 3 + 2)
 
-        // Flicker effect
         if (Math.random() < 0.1) {
             this.opacity *= Math.random() * 0.5 + 0.5
         }
@@ -73,11 +154,15 @@ class Particle {
     }
 }
 
-// Ember particles (small bright sparks)
 class Ember {
     constructor(canvas) {
         this.canvas = canvas
         this.reset()
+    }
+
+    applyTheme() {
+        // Embers read theme colors at draw time, but keeping this method
+        // allows a shared refresh flow when the site theme changes.
     }
 
     reset() {
@@ -99,7 +184,6 @@ class Ember {
         const lifeRatio = this.life / this.maxLife
         this.opacity = (1 - lifeRatio) * 0.8
 
-        // Twinkle effect
         if (Math.random() < 0.15) {
             this.opacity = Math.random() * 0.5 + 0.3
         }
@@ -110,15 +194,16 @@ class Ember {
     }
 
     draw(ctx) {
+        const { ember, emberGlow } = particleTheme
+
         ctx.beginPath()
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`
+        ctx.fillStyle = `rgba(${ember.r}, ${ember.g}, ${ember.b}, ${this.opacity})`
         ctx.fill()
 
-        // Glow effect
         ctx.beginPath()
         ctx.arc(this.x, this.y, this.size * 3, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(0, 255, 255, ${this.opacity * 0.3})`
+        ctx.fillStyle = `rgba(${emberGlow.r}, ${emberGlow.g}, ${emberGlow.b}, ${this.opacity * 0.3})`
         ctx.fill()
     }
 }
@@ -130,7 +215,7 @@ function initParticles(canvas) {
 
     for (let i = 0; i < particleCount; i++) {
         const particle = new Particle(canvas)
-        particle.y = Math.random() * canvas.height // Spread initially
+        particle.y = Math.random() * canvas.height
         particles.push(particle)
     }
 
@@ -163,11 +248,23 @@ onMounted(() => {
     if (!canvas) return
 
     const ctx = canvas.getContext('2d')
+    refreshThemeColors()
     handleResize(canvas)
     animate(canvas, ctx)
 
     resizeObserver = new ResizeObserver(() => handleResize(canvas))
     resizeObserver.observe(document.documentElement)
+
+    themeObserver = new MutationObserver(mutations => {
+        const hasThemeChange = mutations.some(mutation => mutation.attributeName === 'class')
+        if (hasThemeChange) {
+            refreshThemeColors()
+        }
+    })
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class']
+    })
 
     resizeHandler = () => handleResize(canvas)
     window.addEventListener('resize', resizeHandler)
@@ -180,6 +277,10 @@ onUnmounted(() => {
 
     if (resizeObserver) {
         resizeObserver.disconnect()
+    }
+
+    if (themeObserver) {
+        themeObserver.disconnect()
     }
 
     if (resizeHandler) {
@@ -200,6 +301,7 @@ onUnmounted(() => {
     inset: 0;
     width: 100vw;
     height: 100vh;
+    opacity: var(--phenix-particles-opacity, 1);
     pointer-events: none;
     z-index: 0;
     overflow: hidden;
