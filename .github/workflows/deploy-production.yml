@@ -30,7 +30,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           port: ${{ secrets.SSH_PORT || '22' }}
-          fingerprint: ${{ secrets.SSH_FINGERPRINT }}
           script: |
             set -euo pipefail
 
