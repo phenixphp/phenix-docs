@@ -43,11 +43,11 @@ The authentication journey is built around OTP-backed actions and bearer tokens:
 - `POST /logout` revokes only the current token.
 - `POST /reset-password` changes the password and revokes all existing tokens.
 
-Guest-only auth routes also reject requests that already include a bearer token. In other words, once a request looks authenticated, it cannot be used against endpoints such as `/register`, `/login`, or `/register/cancel`.
+Guest-only auth routes reject requests that are already authenticated with a valid bearer token. Requests with missing, malformed, expired, revoked, or invalid tokens are still treated as guest requests, so clients can re-authenticate or complete recovery flows.
 
 ## Guest-only endpoints
 
-These routes are available only when the request does not include a bearer token:
+These routes are available only when the request is not already authenticated by a valid bearer token:
 
 - `POST /register`
 - `POST /verify-email`
