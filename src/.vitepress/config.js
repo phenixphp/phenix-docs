@@ -48,6 +48,7 @@ export default defineConfig({
             { text: 'Caching', link: '/guide/caching' },
             { text: 'Crypto', link: '/guide/crypto' },
             { text: 'Scheduling', link: '/guide/scheduling' },
+            { text: 'Authentication', link: '/guide/authentication' },
             { text: 'Sessions', link: '/guide/sessions' },
             { text: 'Tasks', link: '/guide/tasks' },
             { text: 'Queues', link: '/guide/queues' },
