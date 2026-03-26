@@ -1,8 +1,8 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
-  title: 'Phenix framework',
-  description: 'Phenix framework documentation',
+  title: 'PhenixPHP',
+  description: 'PhenixPHP framework documentation',
   appearance: 'dark',
   head: [
     ['meta', { name: 'theme-color', content: '#0077b6' }],

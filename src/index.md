@@ -2,9 +2,9 @@
 layout: home
 
 hero:
-  name: Phenix framework
-  text: High performance framework for building RESTful APIs
-  tagline: Asynchronous, concurrent, and blazing fast, powered by Amphp
+  name: PhenixPHP
+  text: Async and concurrent APIs in Native PHP
+  tagline: High-performance framework for build APIs, powered by Amphp.
   actions:
     - theme: brand
       text: Get Started
@@ -18,10 +18,10 @@ features:
   details: Modern applications demand tolerance to high traffic. Non-blocking I/O operations and asynchronism allow maximum performance to be achieved.
   icon: ⚡
 - title: Native PHP
-  details: No need to install extensions. Phenix leverages the power of fibers implemented in the Amphp ecosystem. Enjoy seamless integration.
+  details: No need to install external extensions. Phenix leverages the power of fibers implemented in the Amphp ecosystem. Enjoy seamless integration.
   icon: 🐘
 - title: Elegant and simple syntax
-  details: Facades, fluent query builder, elegant route collector, integrated CLI, testing tools, powerful ORM, collections, and much more.
+  details: Facades, fluent query builder, elegant route collector, tasks, events, queues, integrated CLI, testing tools, powerful ORM, collections, and much more.
   icon: ✨
 
 footer: Made by Omar Barbosa with ❤️
