@@ -59,6 +59,7 @@ export default defineConfig({
             { text: 'Mailing', link: '/guide/mailing' },
             { text: 'Helpers', link: '/guide/helpers' },
             { text: 'Testing', link: '/guide/testing' },
+            { text: 'Deployment', link: '/guide/deployment' },
           ]
         }
       ]
