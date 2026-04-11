@@ -36,7 +36,7 @@ For CORS configuration, see [CORS (`HandleCors`)](middlewares.md#cors-handlecors
 - `direct` (`AppMode::DIRECT`): server is exposed directly to clients.
 - `proxied` (`AppMode::PROXIED`): server is behind a reverse proxy/load balancer and trusts forwarding headers from configured proxies.
 
-Use `direct` when the Phenix process receives traffic directly.  
+Use `direct` when the Phenix process receives traffic directly.
 Use `proxied` when requests come through Nginx, HAProxy, ALB, or similar infrastructure.
 
 ## Proxied Mode and Trusted Proxies
