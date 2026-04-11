@@ -46,6 +46,7 @@ export default defineConfig({
             { text: 'ORM', link: '/guide/orm' },
             { text: 'Filesystem', link: '/guide/filesystem' },
             { text: 'Caching', link: '/guide/caching' },
+            { text: 'Logging', link: '/guide/logging' },
             { text: 'Crypto', link: '/guide/crypto' },
             { text: 'Scheduling', link: '/guide/scheduling' },
             { text: 'Authentication', link: '/guide/authentication' },
