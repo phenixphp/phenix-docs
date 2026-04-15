@@ -289,7 +289,105 @@ ExecStart=/usr/bin/php /var/www/phenix/phenix schedule:work
 
 ## Deploying with Docker
 
-Phenix ships a production Docker target in `docker/Dockerfile`.
+Phenix applications can be deployed with Docker, add the container definition to your application when you are ready to deploy it. The recommended structure is to create the `Dockerfile` in the project root, and likewise the `docker-compose.yml` file and other configuration files should be located in a `docker` directory.
+
+Create the support directory:
+
+```bash
+mkdir -p docker
+```
+
+Create `Dockerfile` in the application root:
+
+```dockerfile
+ARG PHP_IMAGE=serversideup/php:8.2-cli-alpine
+ARG COMPOSER_IMAGE=composer:2
+
+FROM ${PHP_IMAGE} AS php-base
+
+USER root
+
+RUN install-php-extensions sockets \
+    && apk add --no-cache sqlite-libs \
+    && php -m | grep -qx pcntl \
+    && php -m | grep -qx sockets \
+    && php -m | grep -qx sqlite3
+
+FROM ${COMPOSER_IMAGE} AS composer-bin
+
+FROM php-base AS vendor-production
+
+USER root
+
+COPY --from=composer-bin /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+RUN apk add --no-cache git unzip
+
+COPY composer.json composer.lock ./
+
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --no-progress \
+    --prefer-dist \
+    --no-scripts \
+    --no-plugins \
+    --no-autoloader
+
+COPY . .
+
+RUN composer dump-autoload --optimize
+
+FROM php-base AS runtime-base
+
+USER root
+
+WORKDIR /var/www/html
+
+ENV APP_PORT=1337
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD ["php", "-r", "$$port=(int) (getenv('APP_PORT') ?: 1337); $$socket=@fsockopen('127.0.0.1', $$port, $$errno, $$errstr, 2); if (!$$socket) { fwrite(STDERR, $$errstr ?: 'connection failed'); exit(1); } fclose($$socket);"]
+
+EXPOSE 1337
+
+ENTRYPOINT ["/var/www/html/docker/entrypoint.sh"]
+
+FROM runtime-base AS production
+
+USER root
+
+ENV APP_ENV=production
+
+COPY --chown=www-data:www-data . /var/www/html
+COPY --from=vendor-production --chown=www-data:www-data /var/www/html/vendor /var/www/html/vendor
+
+RUN mkdir -p /var/www/html/storage/framework/logs /var/www/html/storage/framework/views /var/www/html/storage/framework/testing \
+    && chown -R www-data:www-data /var/www/html/storage /var/www/html/database /var/www/html/vendor /var/www/html/docker/entrypoint.sh \
+    && chmod -R u=rwX,g=rX,o=rX /var/www/html/storage /var/www/html/database \
+    && chmod 750 /var/www/html/docker/entrypoint.sh
+
+USER www-data
+```
+
+Create `docker/entrypoint.sh`:
+
+```sh
+#!/bin/sh
+
+set -eu
+
+echo "Starting production server..."
+exec php public/index.php --host=0.0.0.0 --port="${APP_PORT:-1337}"
+```
+
+Make the entrypoint executable:
+
+```bash
+chmod +x docker/entrypoint.sh
+```
 
 Build the production image:
 
@@ -299,10 +397,9 @@ docker build --target production -t phenix:prod .
 
 Important runtime behavior:
 
-- The production image sets `APP_ENV=production`.
-- The production entrypoint is `docker/entrypoint.sh`.
-- In production, that entrypoint starts `php public/index.php --host=0.0.0.0 --port="${APP_PORT:-1337}"`.
-- The production image does not use `php ./server`.
+- The documented production target sets `APP_ENV=production`.
+- The documented image uses `docker/entrypoint.sh` as its entrypoint.
+- That entrypoint starts `php public/index.php --host=0.0.0.0 --port="${APP_PORT:-1337}"`.
 
 Expected external services for a typical container deployment:
 
