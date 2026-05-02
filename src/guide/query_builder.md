@@ -157,26 +157,31 @@ foreach ($users as $user) {
 You can use SQL functions in the `select` method:
 
 ```php
-use Phenix\Database\Functions;
+use function Phenix\Database\avg;
 
-$product = DB::select([Functions::avg('price')->as('average_price')])
+$product = DB::select([avg('price')->as('average_price')])
     ->from('products')
     ->first();
 
 echo $product['average_price'] . PHP_EOL;
 ```
 
-The available methods of the `Phenix\Database\Functions` class are: `avg`, `sum`, `min`, `max`, `count`, `date`, `month`, `year`, `case`.
+The available SQL helper functions are: `avg`, `sum`, `min_of`, `max_of`, `count_of`, `date_of`, `month`, `year`, `subquery`, `case_of`, `when_equal`, `when_not_equal`, `when_gt`, `when_gte`, `when_lt`, `when_lte`, `when_null`, `when_not_null`, `when_true`, and `when_false`.
+
+The helpers `count_of`, `date_of`, `min_of`, and `max_of` use the `_of` suffix to avoid collisions with native PHP functions such as `count`, `date`, `min`, and `max`:
+
+```php
+use function Phenix\Database\count_of;
+```
 
 #### Case Function
 
 Case is an important utility for obtaining values under conditions:
 
 ```php
-use Phenix\Database\Functions;
+use function Phenix\Database\when_gt;
 
-$case = Functions::case()
-    ->whenGreaterThan('price', 100, 'expensive')
+$case = when_gt('price', 100, 'expensive')
     ->defaultResult('cheap')
     ->as('type');
 
@@ -188,6 +193,8 @@ $products = DB::select([
     ->from('products')
     ->get();
 ```
+
+The recommended helpers initialize the `CASE` expression from the first condition. `case_of()` remains available when you need to create an empty select-case builder, and is named that way because `case()` is a PHP reserved word.
 
 ### Select from Subquery
 
@@ -209,12 +216,12 @@ $users = DB::select(['id', 'name', 'email'])
 You can create a subquery and select it as a column in the main query:
 
 ```php
-use Phenix\Database\Subquery;
+use function Phenix\Database\subquery;
 
 $user = DB::select([
         'id',
         'name',
-        Subquery::make()->select(['name'])
+        subquery(['name'])
             ->from('countries')
             ->whereColumn('users.country_id', 'countries.id')
             ->as('country_name')
@@ -428,7 +435,7 @@ $users = DB::table('users')
 
 ## Grouping Columns
 
-The `groupBy` method allows grouping rows in a table based on the values in one or more columns. It is often used with aggregate functions such as `COUNT`, `SUM`, `AVG`, `MAX`, and `MIN` to summarize the data in each group. This method accepts arguments of type `string`, `array`, or `Phenix\Database\Functions`.
+The `groupBy` method allows grouping rows in a table based on the values in one or more columns. It is often used with aggregate functions such as `COUNT`, `SUM`, `AVG`, `MAX`, and `MIN` to summarize the data in each group. This method accepts arguments of type `string`, `array`, or `Phenix\Database\Funct`.
 
 ```php
 use Phenix\Database\Join;
@@ -488,12 +495,13 @@ $users = DB::select([
 The `HAVING` clause is used to filter rows in the result set of a query that has been grouped using the `GROUP BY` clause. While the `WHERE` clause filters individual rows before they are grouped, the `HAVING` clause filters the grouped rows based on specified conditions. It is typically used in conjunction with aggregate functions like `SUM`, `COUNT`, `AVG`, etc., to filter and retrieve summary data that meets specific criteria. The `HAVING` clause allows you to apply conditions to the grouped data, helping to refine query results and perform operations on aggregated values, making it a valuable tool for data analysis and reporting.
 
 ```php
-use Phenix\Database\Functions;
 use Phenix\Database\Having;
 use Phenix\Database\Join;
 
+use function Phenix\Database\count_of;
+
 $users = DB::select([
-        Functions::count('products.id')->as('identifiers'),
+        count_of('products.id')->as('identifiers'),
         'products.category_id',
         'categories.description',
     ])
