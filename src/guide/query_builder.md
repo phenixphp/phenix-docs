@@ -233,7 +233,7 @@ $user = DB::select([
 
 ### Column Alias
 
-You can assign aliases to selected columns:
+You can assign aliases to selected columns using the `Alias` class:
 
 ```php
 use Phenix\Database\Alias;
@@ -241,6 +241,19 @@ use Phenix\Database\Alias;
 $users = DB::select([
         'id',
         Alias::of('name')->as('full_name'),
+    ])
+    ->from('users')
+    ->get();
+```
+
+You can also use the `alias` helper function:
+
+```php
+use function Phenix\Database\alias;
+
+$users = DB::select([
+        'id',
+        alias('name', 'full_name'),
     ])
     ->from('users')
     ->get();
