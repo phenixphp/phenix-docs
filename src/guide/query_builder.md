@@ -246,14 +246,14 @@ $users = DB::select([
     ->get();
 ```
 
-You can also use the `alias` helper function:
+You can also use the `alias_of` helper function:
 
 ```php
-use function Phenix\Database\alias;
+use function Phenix\Database\alias_of;
 
 $users = DB::select([
         'id',
-        alias('name', 'full_name'),
+        alias_of('name', 'full_name'),
     ])
     ->from('users')
     ->get();
