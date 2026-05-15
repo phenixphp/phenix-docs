@@ -1,9 +1,59 @@
 import { defineConfig } from 'vitepress'
+import { createHighlighter } from 'shiki'
+
+const codeTheme = {
+  light: 'github-light',
+  dark: 'github-dark'
+}
+
+let highlighterPromise
+
+function getHighlighter () {
+  highlighterPromise ??= createHighlighter({
+    themes: [codeTheme.light, codeTheme.dark],
+    langs: ['php']
+  })
+
+  return highlighterPromise
+}
 
 export default defineConfig({
   title: 'PhenixPHP',
   description: 'PhenixPHP framework documentation',
   appearance: 'dark',
+  async transformPageData (pageData) {
+    const showcase = pageData.frontmatter.codeShowcase
+
+    if (!showcase?.tabs?.length) {
+      return
+    }
+
+    const highlighter = await getHighlighter()
+
+    return {
+      frontmatter: {
+        ...pageData.frontmatter,
+        codeShowcase: {
+          ...showcase,
+          tabs: showcase.tabs.map((tab) => ({
+            ...tab,
+            highlightedCode: highlighter.codeToHtml(tab.code, {
+              lang: 'php',
+              themes: codeTheme,
+              defaultColor: false
+            })
+          }))
+        }
+      }
+    }
+  },
+  markdown: {
+    theme: codeTheme,
+    lineNumbers: true,
+    languageLabel: {
+      php: 'PHP'
+    }
+  },
   head: [
     ['meta', { name: 'theme-color', content: '#0077b6' }],
     ['meta', { name: 'mobile-web-app-capable', content: 'yes' }],

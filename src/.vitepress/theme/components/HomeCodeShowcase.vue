@@ -8,10 +8,12 @@ const activeIndex = ref(0)
 const showcase = computed(() => frontmatter.value.codeShowcase)
 const tabs = computed(() => showcase.value?.tabs ?? [])
 const activeTab = computed(() => tabs.value[activeIndex.value] ?? null)
-const codeLines = computed(() => {
-    const code = activeTab.value?.code ?? ''
+const activeCodeHtml = computed(() => {
+    if (activeTab.value?.highlightedCode) {
+        return activeTab.value.highlightedCode
+    }
 
-    return code.replace(/\n$/, '').split('\n')
+    return codeToFallbackHtml(activeTab.value?.code ?? '')
 })
 
 watch(tabs, (items) => {
@@ -22,6 +24,24 @@ watch(tabs, (items) => {
 
 function activateTab(index) {
     activeIndex.value = index
+}
+
+function codeToFallbackHtml(code) {
+    const lines = code.replace(/\n$/, '').split('\n')
+    const html = lines
+        .map((line) => `<span class="line">${escapeHtml(line) || ' '}</span>`)
+        .join('\n')
+
+    return `<pre class="shiki fallback" tabindex="0"><code>${html}</code></pre>`
+}
+
+function escapeHtml(value) {
+    return value
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;')
 }
 </script>
 
@@ -75,11 +95,7 @@ function activateTab(index) {
                         <span class="language-badge">PHP</span>
                     </div>
 
-                    <pre class="code-block" tabindex="0"><code><span
-                        v-for="(line, index) in codeLines"
-                        :key="`${activeTab.label}-${index}`"
-                        class="code-line"
-                    ><span class="line-number">{{ index + 1 }}</span><span class="line-code">{{ line || ' ' }}</span></span></code></pre>
+                    <div class="code-block" v-html="activeCodeHtml"></div>
 
                     <p class="description">
                         {{ activeTab.description }}
@@ -286,40 +302,57 @@ function activateTab(index) {
 }
 
 .HomeCodeShowcase .code-block {
+    background: var(--showcase-code-bg);
+    color: var(--showcase-code-color);
+}
+
+.HomeCodeShowcase .code-block .shiki {
     min-height: 420px;
     margin: 0;
     padding: 28px 0;
     overflow-x: auto;
-    background: var(--showcase-code-bg);
+    background: transparent !important;
     color: var(--showcase-code-color);
     font-size: 14px;
-    line-height: 1.72;
+    line-height: 1.55;
     font-family: var(--vp-font-family-mono);
     tab-size: 4;
 }
 
-.HomeCodeShowcase .code-line {
-    display: grid;
-    grid-template-columns: 62px minmax(760px, max-content);
+.HomeCodeShowcase .code-block code {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
     min-width: max-content;
+    counter-reset: code-line;
+    white-space: normal;
 }
 
-.HomeCodeShowcase .line-number,
-.HomeCodeShowcase .line-code {
+.HomeCodeShowcase .code-block .line {
     display: block;
+    position: relative;
+    min-width: max-content;
+    min-height: 1.55em;
+    padding-right: 28px;
+    padding-left: 84px;
+    white-space: pre;
 }
 
-.HomeCodeShowcase .line-number {
-    min-width: 62px;
-    padding: 0 18px 0 22px;
+.HomeCodeShowcase .code-block .line::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 62px;
+    padding-right: 18px;
     color: var(--showcase-line-number);
+    content: counter(code-line);
+    counter-increment: code-line;
     text-align: right;
     user-select: none;
 }
 
-.HomeCodeShowcase .line-code {
-    padding-right: 28px;
-    white-space: pre;
+.HomeCodeShowcase .code-block .line:empty::after {
+    content: ' ';
 }
 
 .HomeCodeShowcase .description {
@@ -356,18 +389,17 @@ function activateTab(index) {
         min-height: 500px;
     }
 
-    .HomeCodeShowcase .code-block {
+    .HomeCodeShowcase .code-block .shiki {
         min-height: 360px;
         font-size: 13px;
     }
 
-    .HomeCodeShowcase .code-line {
-        grid-template-columns: 50px minmax(680px, max-content);
+    .HomeCodeShowcase .code-block .line {
+        padding-left: 68px;
     }
 
-    .HomeCodeShowcase .line-number {
-        min-width: 50px;
-        padding-left: 14px;
+    .HomeCodeShowcase .code-block .line::before {
+        width: 50px;
         padding-right: 14px;
     }
 
