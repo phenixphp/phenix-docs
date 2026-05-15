@@ -72,6 +72,10 @@ export default defineConfig({
       {
         text: 'GitHub',
         link: 'https://github.com/phenixphp/phenix'
+      },
+      {
+        text: 'X/Twitter',
+        link: 'https://x.com/phenixphp'
       }
     ],
     sidebar: {
