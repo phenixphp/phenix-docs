@@ -38,8 +38,8 @@
     --vp-home-hero-name-color: transparent;
     --vp-home-hero-name-background: linear-gradient(135deg, #00a9d6 0%, #0077b6 52%, #4b61c9 100%);
 
-    --vp-home-hero-image-background-image: radial-gradient(circle, rgba(0, 212, 255, 0.3) 0%, transparent 70%);
-    --vp-home-hero-image-filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.6));
+    --vp-home-hero-image-background-image: none;
+    --vp-home-hero-image-filter: none;
 
     /* Light mode foundation */
     --vp-c-bg: #f6fbff;
@@ -77,6 +77,8 @@
     --vp-button-brand-active-bg: #056cae;
 
     --vp-home-hero-name-background: linear-gradient(135deg, var(--phenix-cyan) 0%, var(--phenix-blue) 50%, var(--phenix-purple) 100%);
+    --vp-home-hero-image-background-image: radial-gradient(circle, rgba(0, 212, 255, 0.3) 0%, transparent 70%);
+    --vp-home-hero-image-filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.6));
 }
 
 /* Hero Section Enhancements */
@@ -532,6 +534,15 @@ html:not(.dark) .VPSidebarItem.is-active>.item>.link>.text {
 /* Phoenix Logo Animation */
 .phoenix-logo {
     animation: phoenixGlow 4s ease-in-out infinite alternate;
+}
+
+html:not(.dark) .phoenix-logo {
+    animation: none;
+    filter: none;
+}
+
+html:not(.dark) .phoenix-container .glow-layer {
+    display: none;
 }
 
 @keyframes phoenixGlow {
