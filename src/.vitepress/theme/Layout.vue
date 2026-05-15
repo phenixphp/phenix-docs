@@ -1,6 +1,5 @@
 <script setup>
 import DefaultTheme from 'vitepress/theme'
-import HeroParticles from './components/HeroParticles.vue'
 import HomeCodeShowcase from './components/HomeCodeShowcase.vue'
 import PhoenixLogo from './components/PhoenixLogo.vue'
 
@@ -9,10 +8,6 @@ const { Layout } = DefaultTheme
 
 <template>
     <Layout>
-        <template #home-hero-before>
-            <HeroParticles />
-        </template>
-
         <template #home-hero-image>
             <PhoenixLogo />
         </template>

@@ -40,14 +40,6 @@
     --vp-c-divider: rgba(0, 119, 182, 0.18);
     --vp-c-gutter: rgba(0, 119, 182, 0.08);
 
-    /* Hero Particles */
-    --phenix-particle-1: #0078b3;
-    --phenix-particle-2: #009ada;
-    --phenix-particle-3: #386ec2;
-    --phenix-particle-accent: #4a59c9;
-    --phenix-ember: #0c63a8;
-    --phenix-ember-glow: #00a9d6;
-    --phenix-particles-opacity: 0.82;
 }
 
 .dark {
@@ -62,14 +54,6 @@
 
     --vp-c-divider: rgba(0, 212, 255, 0.1);
     --vp-c-gutter: rgba(0, 212, 255, 0.05);
-
-    --phenix-particle-1: #00d4ff;
-    --phenix-particle-2: #00ffff;
-    --phenix-particle-3: #64b4ff;
-    --phenix-particle-accent: #7b2cbf;
-    --phenix-ember: #e6fdff;
-    --phenix-ember-glow: #00ffff;
-    --phenix-particles-opacity: 1;
 
     --vp-home-hero-name-background: linear-gradient(135deg, var(--phenix-cyan) 0%, var(--phenix-blue) 50%, var(--phenix-purple) 100%);
 }
@@ -430,19 +414,6 @@ html:not(.dark) .VPSidebarItem.is-active>.item>.link>.text {
     border-top: 1px solid rgba(0, 212, 255, 0.1);
     background: linear-gradient(180deg, transparent, rgba(0, 212, 255, 0.02));
 }
-
-/* Particles Container */
-.particles-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    pointer-events: none;
-    z-index: 0;
-}
-
 
 /* Phoenix Logo Animation */
 .phoenix-logo {
