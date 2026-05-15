@@ -15,34 +15,27 @@ hero:
 
 codeShowcase:
   title: Code that feels familiar, runs concurrently
-  intro: PhenixPHP combines expressive APIs with PHP Fibers and the Amp ecosystem, so routing, validation, persistence, testing, and async work stay readable without special runtime extensions.
+  intro: PhenixPHP combines expressive APIs with PHP Fibers and the Amp ecosystem, so routing, validation, persistence, and async work stay readable without special runtime extensions.
   tabs:
     - label: Routing
       file: routes/api.php
-      description: Group routes by prefix, middleware, and names while keeping every endpoint easy to scan from one file.
+      description: Define readable CRUD endpoints with controller actions and route names that match the quick start flow.
       code: |
         <?php
 
         declare(strict_types=1);
 
         use App\Http\Controllers\UserController;
-        use Phenix\Auth\Middlewares\Authenticated;
         use Phenix\Facades\Route;
-        use Phenix\Routing\Route as Router;
 
-        Route::middleware(Authenticated::class)
-            ->prefix('admin')
-            ->name('admin')
-            ->group(function (Router $route) {
-                $route->get('/users', [UserController::class, 'index'])
-                    ->name('users.index');
+        Route::get('/users', [UserController::class, 'index'])
+            ->name('users.index');
 
-                $route->post('/users', [UserController::class, 'store'])
-                    ->name('users.store');
-            });
+        Route::post('/users', [UserController::class, 'store'])
+            ->name('users.store');
     - label: Controllers
       file: app/Http/Controllers/UserController.php
-      description: Controllers receive typed requests and return response objects, keeping HTTP behavior explicit and compact.
+      description: Controllers receive typed requests, use models directly, and return explicit JSON responses.
       code: |
         <?php
 
@@ -51,6 +44,7 @@ codeShowcase:
         namespace App\Http\Controllers;
 
         use App\Http\Requests\StoreUserRequest;
+        use App\Models\User;
         use Phenix\Http\Constants\HttpStatus;
         use Phenix\Http\Controller;
         use Phenix\Http\Request;
@@ -60,23 +54,70 @@ codeShowcase:
         {
             public function index(Request $request): Response
             {
-                return response()->json([
-                    'page' => $request->query('page', 1),
-                    'users' => [],
-                ]);
+                $users = User::query()->paginate($request->getUri());
+
+                return response()->json($users);
             }
 
             public function store(StoreUserRequest $request): Response
             {
-                return response()->json(
-                    $request->validated(),
-                    HttpStatus::CREATED
-                );
+                $user = User::create($request->validated());
+
+                return response()->json($user, HttpStatus::CREATED);
             }
         }
-    - label: Models
+    - label: Migrations
+      file: database/migrations/20230930111521_create_users_table.php
+      description: Database changes are versioned with migration classes and fluent table builders.
+      code: |
+        <?php
+
+        declare(strict_types=1);
+
+        use Phenix\Database\Migration;
+
+        class CreateUsersTable extends Migration
+        {
+            public function up(): void
+            {
+                $table = $this->table('users');
+                $table->string('name', 100);
+                $table->string('email', 124)->unique();
+                $table->create();
+            }
+
+            public function down(): void
+            {
+                $this->table('users')->drop()->save();
+            }
+        }
+    - label: Form Requests
+      file: app/Http/Requests/StoreUserRequest.php
+      description: Form requests keep validation at the HTTP boundary and expose validated data to controller actions.
+      code: |
+        <?php
+
+        declare(strict_types=1);
+
+        namespace App\Http\Requests;
+
+        use Phenix\Http\FormRequest;
+        use Phenix\Validation\Types\Email;
+        use Phenix\Validation\Types\Str;
+
+        class StoreUserRequest extends FormRequest
+        {
+            protected function rules(): array
+            {
+                return [
+                    'name' => Str::required()->max(60),
+                    'email' => Email::required(),
+                ];
+            }
+        }
+    - label: ORM
       file: app/Models/User.php
-      description: Models use PHP attributes for table metadata, column mapping, dates, and relationships.
+      description: Ashes ORM maps database rows into typed PHP objects with attributes, relationships, and fluent retrieval.
       code: |
         <?php
 
@@ -106,6 +147,9 @@ codeShowcase:
             #[DateTime(name: 'created_at', autoInit: true)]
             public Date $createdAt;
 
+            #[DateTime(name: 'updated_at')]
+            public Date|null $updatedAt = null;
+
             #[HasMany(model: Product::class, foreignKey: 'user_id')]
             public Collection $products;
 
@@ -114,59 +158,9 @@ codeShowcase:
                 return 'users';
             }
         }
-    - label: Migrations
-      file: database/migrations/2026_01_01_000000_create_users_table.php
-      description: Database changes are versioned with migration classes and fluent table builders.
-      code: |
-        <?php
-
-        declare(strict_types=1);
-
-        use Phenix\Database\Migration;
-
-        class CreateUsersTable extends Migration
-        {
-            public function up(): void
-            {
-                $table = $this->table('users');
-
-                $table->string('name', 100);
-                $table->string('email', 124)->unique();
-                $table->create();
-            }
-
-            public function down(): void
-            {
-                $this->table('users')->drop()->save();
-            }
-        }
-    - label: Form Requests
-      file: app/Http/Requests/StoreUserRequest.php
-      description: Form requests keep validation close to the boundary and are resolved automatically before the controller action runs.
-      code: |
-        <?php
-
-        declare(strict_types=1);
-
-        namespace App\Http\Requests;
-
-        use Phenix\Http\FormRequest;
-        use Phenix\Validation\Types\Email;
-        use Phenix\Validation\Types\Str;
-
-        class StoreUserRequest extends FormRequest
-        {
-            protected function rules(): array
-            {
-                return [
-                    'name' => Str::required()->max(60),
-                    'email' => Email::required(),
-                ];
-            }
-        }
     - label: Query Builder
       file: app/Http/Controllers/UserController.php
-      description: The query builder keeps reads fluent and predictable while returning data ready for JSON APIs.
+      description: Use the DB facade when you want fluent SQL-style reads that return arrays or paginated payloads.
       code: |
         <?php
 
@@ -174,67 +168,20 @@ codeShowcase:
 
         namespace App\Http\Controllers;
 
-        use Phenix\Database\Constants\Order;
         use Phenix\Facades\DB;
         use Phenix\Http\Controller;
+        use Phenix\Http\Request;
         use Phenix\Http\Response;
 
         class UserController extends Controller
         {
-            public function active(): Response
+            public function index(Request $request): Response
             {
                 $users = DB::table('users')
-                    ->whereEqual('status', 'active')
-                    ->orderBy('created_at', Order::DESC)
-                    ->get();
+                    ->select(['id', 'name', 'email'])
+                    ->paginate($request->getUri());
 
                 return response()->json($users);
-            }
-        }
-    - label: Testing
-      file: tests/Feature/HealthTest.php
-      description: Feature tests can boot the app and make real HTTP requests through the Phenix testing client.
-      code: |
-        <?php
-
-        declare(strict_types=1);
-
-        use Phenix\Facades\Route;
-
-        test('health endpoint returns ok', function () {
-            Route::get('/health', fn () => response()->plain('ok'));
-
-            $this->app->run();
-
-            $this->get('/health')
-                ->assertOk()
-                ->assertBodyContains('ok');
-        });
-    - label: Mail
-      file: app/Services/SendWelcomeEmails.php
-      description: Async operations can be awaited together, so I/O-heavy workflows stay concise and concurrent.
-      code: |
-        <?php
-
-        declare(strict_types=1);
-
-        namespace App\Services;
-
-        use Amp\Future;
-        use App\Mail\WelcomeMail;
-        use Phenix\Facades\Mail;
-
-        class SendWelcomeEmails
-        {
-            public function handle(array $users): array
-            {
-                $futures = [];
-
-                foreach ($users as $user) {
-                    $futures[] = Mail::send(new WelcomeMail($user));
-                }
-
-                return Future\await($futures);
             }
         }
 
