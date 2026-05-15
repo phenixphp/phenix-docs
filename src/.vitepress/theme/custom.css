@@ -149,7 +149,7 @@ html:not(.dark) .VPHero .name {
     background: linear-gradient(135deg, var(--phenix-blue) 0%, var(--phenix-cyan) 100%);
     color: #ffffff;
     font-weight: 700;
-    text-shadow: 0 1px 1px rgba(2, 18, 51, 0.5);
+    text-shadow: 0 2px 1px rgba(2, 18, 51, 0.5);
     border: 1px solid rgba(0, 255, 255, 0.3);
     transition: all 0.3s ease;
     position: relative;
@@ -182,19 +182,51 @@ html:not(.dark) .VPButton.brand {
 }
 
 /* Feature Cards Enhancement */
+.VPHomeFeatures {
+    padding-top: 12px;
+}
+
 .VPFeature {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(236, 247, 255, 0.92) 100%);
-    border: 1px solid rgba(0, 119, 182, 0.18);
-    border-radius: 16px;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-    margin-top: 32px;
+    border: 1px solid rgba(0, 119, 182, 0.16);
+    border-radius: 8px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(238, 248, 255, 0.92)),
+        var(--vp-c-bg-soft);
+    box-shadow: 0 18px 42px rgba(0, 74, 112, 0.09);
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
 }
 
 .dark .VPFeature {
-    background: linear-gradient(135deg, var(--phenix-bg-card) 0%, rgba(18, 18, 26, 0.8) 100%);
-    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-color: rgba(0, 212, 255, 0.14);
+    background:
+        linear-gradient(180deg, rgba(22, 23, 34, 0.96), rgba(13, 14, 22, 0.96)),
+        var(--phenix-bg-card);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.22);
+}
+
+.VPFeature .box {
+    padding: 28px;
+}
+
+.VPFeature .icon {
+    margin-bottom: 22px;
+    border: 1px solid rgba(0, 119, 182, 0.16);
+    border-radius: 8px;
+    background: rgba(0, 119, 182, 0.08);
+    color: #006ea6;
+    box-shadow: inset 0 0 18px rgba(0, 119, 182, 0.04);
+}
+
+.dark .VPFeature .icon {
+    border-color: rgba(0, 212, 255, 0.16);
+    background: rgba(0, 212, 255, 0.08);
+    color: var(--phenix-cyan);
+    box-shadow: inset 0 0 18px rgba(0, 212, 255, 0.05);
 }
 
 .VPFeature::before {
@@ -203,25 +235,22 @@ html:not(.dark) .VPButton.brand {
     top: 0;
     left: 0;
     right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--phenix-cyan), transparent);
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--phenix-blue-dark), var(--phenix-cyan));
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.2s ease;
 }
 
 .VPFeature:hover {
-    border-color: rgba(0, 119, 182, 0.35);
-    box-shadow:
-        0 10px 28px rgba(0, 83, 125, 0.14),
-        inset 0 0 20px rgba(0, 119, 182, 0.03);
-    transform: translateY(-4px);
+    border-color: rgba(0, 119, 182, 0.32);
+    box-shadow: 0 22px 52px rgba(0, 74, 112, 0.14);
+    transform: translateY(-2px);
 }
 
 .dark .VPFeature:hover {
-    border-color: rgba(0, 212, 255, 0.4);
-    box-shadow:
-        0 0 20px rgba(0, 212, 255, 0.15),
-        inset 0 0 20px rgba(0, 212, 255, 0.03);
+    border-color: rgba(0, 212, 255, 0.32);
+    box-shadow: 0 22px 54px rgba(0, 0, 0, 0.3), 0 0 24px rgba(0, 212, 255, 0.08);
 }
 
 .VPFeature:hover::before {
@@ -230,12 +259,22 @@ html:not(.dark) .VPButton.brand {
 
 .VPFeature .title {
     color: #006ea6;
-    text-shadow: 0 0 8px rgba(0, 191, 255, 0.2);
+    line-height: 1.35;
+    font-size: 17px;
+    font-weight: 700;
+    text-shadow: none;
 }
 
 .dark .VPFeature .title {
     color: var(--phenix-cyan);
-    text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    text-shadow: none;
+}
+
+.VPFeature .details {
+    padding-top: 10px;
+    line-height: 1.65;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 /* Navigation Enhancement */

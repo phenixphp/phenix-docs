@@ -1,11 +1,10 @@
 <script setup>
 import DefaultTheme from 'vitepress/theme'
-import { useData } from 'vitepress'
 import HeroParticles from './components/HeroParticles.vue'
+import HomeCodeShowcase from './components/HomeCodeShowcase.vue'
 import PhoenixLogo from './components/PhoenixLogo.vue'
 
 const { Layout } = DefaultTheme
-const { frontmatter } = useData()
 </script>
 
 <template>
@@ -16,6 +15,10 @@ const { frontmatter } = useData()
 
         <template #home-hero-image>
             <PhoenixLogo />
+        </template>
+
+        <template #home-features-before>
+            <HomeCodeShowcase />
         </template>
     </Layout>
 </template>
