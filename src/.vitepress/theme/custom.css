@@ -25,6 +25,15 @@
     --vp-c-brand-2: var(--phenix-cyan);
     --vp-c-brand-3: var(--phenix-blue-dark);
     --vp-c-brand-soft: rgba(0, 212, 255, 0.14);
+    --vp-button-brand-border: #056cae;
+    --vp-button-brand-text: #ffffff;
+    --vp-button-brand-bg: #0077b6;
+    --vp-button-brand-hover-border: #0877bd;
+    --vp-button-brand-hover-text: #ffffff;
+    --vp-button-brand-hover-bg: #0a82bf;
+    --vp-button-brand-active-border: #056cae;
+    --vp-button-brand-active-text: #ffffff;
+    --vp-button-brand-active-bg: #056cae;
 
     --vp-home-hero-name-color: transparent;
     --vp-home-hero-name-background: linear-gradient(135deg, #00a9d6 0%, #0077b6 52%, #4b61c9 100%);
@@ -60,6 +69,12 @@
     --phenix-focus-ring: rgba(0, 212, 255, 0.32);
     --phenix-surface-ring: rgba(0, 212, 255, 0.14);
     --phenix-shadow-soft: 0 18px 44px rgba(0, 0, 0, 0.24);
+    --vp-button-brand-border: #0a9ed0;
+    --vp-button-brand-bg: #0077b6;
+    --vp-button-brand-hover-border: #16b6e2;
+    --vp-button-brand-hover-bg: #0a82bf;
+    --vp-button-brand-active-border: #056cae;
+    --vp-button-brand-active-bg: #056cae;
 
     --vp-home-hero-name-background: linear-gradient(135deg, var(--phenix-cyan) 0%, var(--phenix-blue) 50%, var(--phenix-purple) 100%);
 }
@@ -140,30 +155,30 @@ html:not(.dark) .VPHero .name {
 
 .VPButton.brand {
     border: 1px solid #056cae;
-    background-color: #0877bd;
+    background: #0077b6;
     color: #ffffff;
     text-shadow: none;
     box-shadow: 0 8px 18px rgba(0, 90, 140, 0.16);
 }
 
 .dark .VPButton.brand {
-    border-color: #00a9d6;
-    background-color: #0087c7;
+    border-color: #0a9ed0;
+    background: #0077b6;
     color: #ffffff;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2), 0 0 16px rgba(0, 212, 255, 0.12);
 }
 
 .VPButton.brand:hover {
-    border-color: #045f9b;
-    background-color: #056cae;
+    border-color: #0877bd;
+    background: #0a82bf;
     color: #ffffff;
     box-shadow: 0 10px 22px rgba(0, 90, 140, 0.22);
     transform: translateY(-1px);
 }
 
 .dark .VPButton.brand:hover {
-    border-color: #00d4ff;
-    background-color: #00a4d4;
+    border-color: #16b6e2;
+    background: #0a82bf;
     color: #ffffff;
     box-shadow: 0 0 18px rgba(0, 212, 255, 0.22), 0 10px 24px rgba(0, 0, 0, 0.24);
 }
@@ -174,7 +189,7 @@ html:not(.dark) .VPHero .name {
 }
 
 .VPButton.brand:active {
-    background-color: #045f9b;
+    background: #056cae;
     box-shadow: 0 5px 14px rgba(0, 90, 140, 0.16);
     transform: translateY(0);
 }
