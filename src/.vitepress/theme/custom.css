@@ -188,6 +188,7 @@ html:not(.dark) .VPButton.brand {
 
 .VPFeature {
     position: relative;
+    isolation: isolate;
     overflow: hidden;
     border: 1px solid rgba(0, 119, 182, 0.16);
     border-radius: 8px;
@@ -196,6 +197,7 @@ html:not(.dark) .VPButton.brand {
         var(--vp-c-bg-soft);
     box-shadow: 0 18px 42px rgba(0, 74, 112, 0.09);
     transition:
+        background 0.2s ease,
         border-color 0.2s ease,
         box-shadow 0.2s ease,
         transform 0.2s ease;
@@ -210,6 +212,8 @@ html:not(.dark) .VPButton.brand {
 }
 
 .VPFeature .box {
+    position: relative;
+    z-index: 1;
     padding: 28px;
 }
 
@@ -236,24 +240,59 @@ html:not(.dark) .VPButton.brand {
     left: 0;
     right: 0;
     width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, var(--phenix-blue-dark), var(--phenix-cyan));
+    z-index: 2;
+    height: 3px;
+    background: linear-gradient(90deg, #1499c8 0%, #00d4ff 46%, #42f0ff 100%);
+    box-shadow: 0 0 0 rgba(0, 212, 255, 0);
+    opacity: 0.68;
+    transform: scaleX(0.18);
+    transform-origin: left center;
+    transition:
+        box-shadow 0.2s ease,
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+.VPFeature::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 0;
+    height: 96px;
+    background:
+        linear-gradient(180deg, rgba(0, 169, 214, 0.11), rgba(0, 169, 214, 0)),
+        radial-gradient(circle at 18px 0, rgba(0, 212, 255, 0.16), transparent 82px);
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.2s ease;
 }
 
 .VPFeature:hover {
     border-color: rgba(0, 119, 182, 0.32);
-    box-shadow: 0 22px 52px rgba(0, 74, 112, 0.14);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(236, 248, 255, 0.94)),
+        var(--vp-c-bg-soft);
+    box-shadow: 0 18px 44px rgba(0, 92, 140, 0.13), 0 0 0 1px rgba(0, 212, 255, 0.05);
     transform: translateY(-2px);
 }
 
 .dark .VPFeature:hover {
     border-color: rgba(0, 212, 255, 0.32);
-    box-shadow: 0 22px 54px rgba(0, 0, 0, 0.3), 0 0 24px rgba(0, 212, 255, 0.08);
+    background:
+        linear-gradient(180deg, rgba(24, 28, 38, 0.98), rgba(13, 16, 24, 0.98)),
+        var(--phenix-bg-card);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28), 0 0 26px rgba(0, 212, 255, 0.08);
 }
 
 .VPFeature:hover::before {
+    opacity: 1;
+    transform: scaleX(1);
+    box-shadow: 0 0 18px rgba(0, 212, 255, 0.22);
+}
+
+.VPFeature:hover::after {
     opacity: 1;
 }
 
