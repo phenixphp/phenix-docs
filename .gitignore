@@ -2,3 +2,5 @@ node_modules/
 .DS_Store
 src/.vitepress/cache/
 AGENTS.md
+.agents
+skills-lock.json
