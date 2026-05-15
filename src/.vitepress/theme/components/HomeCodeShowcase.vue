@@ -116,6 +116,7 @@ function escapeHtml(value) {
     --showcase-tab-color: #4d6478;
     --showcase-tab-hover: rgba(0, 119, 182, 0.08);
     --showcase-tab-active-bg: linear-gradient(135deg, #0077b6, #00a9d6);
+    --showcase-focus-ring: rgba(0, 119, 182, 0.28);
     --showcase-header-bg: rgba(255, 255, 255, 0.54);
     --showcase-header-color: #5a7288;
     --showcase-code-bg: linear-gradient(90deg, rgba(0, 119, 182, 0.035), transparent 42%), #f8fcff;
@@ -136,6 +137,7 @@ function escapeHtml(value) {
     --showcase-tab-color: rgba(255, 255, 255, 0.68);
     --showcase-tab-hover: rgba(0, 212, 255, 0.08);
     --showcase-tab-active-bg: linear-gradient(135deg, var(--phenix-blue-dark), var(--phenix-blue));
+    --showcase-focus-ring: rgba(0, 212, 255, 0.32);
     --showcase-header-bg: rgba(255, 255, 255, 0.018);
     --showcase-header-color: rgba(255, 255, 255, 0.6);
     --showcase-code-bg: linear-gradient(90deg, rgba(0, 212, 255, 0.035), transparent 42%), rgba(4, 6, 13, 0.42);
@@ -171,6 +173,7 @@ function escapeHtml(value) {
     line-height: 1.16;
     font-weight: 800;
     letter-spacing: 0;
+    text-wrap: balance;
 }
 
 .HomeCodeShowcase .summary {
@@ -178,6 +181,7 @@ function escapeHtml(value) {
     color: var(--vp-c-text-2);
     font-size: 17px;
     line-height: 1.7;
+    text-wrap: pretty;
 }
 
 .HomeCodeShowcase .showcase-card {
@@ -191,12 +195,15 @@ function escapeHtml(value) {
 .HomeCodeShowcase .tabs {
     display: flex;
     overflow-x: auto;
+    scrollbar-width: thin;
+    scroll-padding-inline: 12px;
     border-bottom: 1px solid var(--showcase-border);
     background: var(--showcase-tabs-bg);
 }
 
 .HomeCodeShowcase .tab {
     position: relative;
+    flex: 0 0 auto;
     min-width: 132px;
     min-height: 44px;
     padding: 0 18px;
@@ -218,6 +225,11 @@ function escapeHtml(value) {
 .HomeCodeShowcase .tab:focus-visible {
     color: var(--vp-c-text-1);
     background: var(--showcase-tab-hover);
+}
+
+.HomeCodeShowcase .tab:focus-visible {
+    z-index: 1;
+    box-shadow: inset 0 0 0 3px var(--showcase-focus-ring);
     outline: none;
 }
 
@@ -229,6 +241,7 @@ function escapeHtml(value) {
 .HomeCodeShowcase .tab.active {
     color: #ffffff;
     background: var(--showcase-tab-active-bg);
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.22);
 }
 
 .HomeCodeShowcase .tab.active::after {
@@ -311,6 +324,7 @@ function escapeHtml(value) {
     margin: 0;
     padding: 28px 0;
     overflow-x: auto;
+    scrollbar-width: thin;
     background: transparent !important;
     color: var(--showcase-code-color);
     font-size: 14px;
@@ -364,6 +378,7 @@ function escapeHtml(value) {
     background: var(--showcase-description-bg);
     font-size: 15px;
     line-height: 1.7;
+    text-wrap: pretty;
 }
 
 @media (max-width: 768px) {
@@ -406,6 +421,33 @@ function escapeHtml(value) {
     .HomeCodeShowcase .description {
         padding: 18px;
         font-size: 14px;
+    }
+}
+
+@media (max-width: 520px) {
+    .HomeCodeShowcase {
+        padding-right: 14px;
+        padding-left: 14px;
+    }
+
+    .HomeCodeShowcase .code-header {
+        min-height: 40px;
+        padding: 0 14px;
+        gap: 8px;
+    }
+
+    .HomeCodeShowcase .window-controls {
+        display: none;
+    }
+
+    .HomeCodeShowcase .language-badge {
+        padding: 2px 7px;
+    }
+
+    .HomeCodeShowcase .code-block .shiki {
+        min-height: 330px;
+        padding: 22px 0;
+        font-size: 12px;
     }
 }
 </style>
