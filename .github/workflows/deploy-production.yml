@@ -22,6 +22,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Check SSH reachability
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+        run: |
+          set -euo pipefail
+
+          echo "Checking SSH reachability on configured host and port."
+          nc -vz -w 10 "$SSH_HOST" "$SSH_PORT"
+
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1
         with:
