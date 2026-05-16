@@ -6,7 +6,6 @@
 - [Use cases](#use-cases)
 - [Performance](#performance)
 - [The framework name](#the-framework-name)
-- [Development status](#development-status)
 - [Project objective](#project-objective)
 
 I have a dream: high-performance, highly scalable, and very fast applications written in PHP; and since there are now fibers in the core of PHP, I feel that the time is right for this dream to come true.
