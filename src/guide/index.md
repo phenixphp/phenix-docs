@@ -55,10 +55,6 @@ Transfer rate:          801.70 [Kbytes/sec] received
 
 The name Phenix comes from the union between PHP and Phoenix (PHP + Phoenix = Phenix). Basically, I try to highlight that PHP will never die; it simply resurfaces better and better again and again. Each time it is reborn, it is much better than its previous version.
 
-## Development status
-
-Phenix is in active development, **not production ready**. I hope to release the first stable version very soon.
-
 ## Project objective
 
 All basic features built constitute a minimum viable product (MVP), with the objective to obtain the PHP community's support and continue with the framework development. The opportunity offered by the Amphp ecosystem has a lot of potential: asynchronous code, parallelism, and concurrency in PHP.
