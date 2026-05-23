@@ -111,6 +111,7 @@ export default defineConfig({
             { text: 'Views', link: '/guide/views' },
             { text: 'Translation', link: '/guide/translation' },
             { text: 'Mailing', link: '/guide/mailing' },
+            { text: 'HTTP Client', link: '/guide/http_client' },
             { text: 'Helpers', link: '/guide/helpers' },
             { text: 'Testing', link: '/guide/testing' },
             { text: 'Deployment', link: '/guide/deployment' },
