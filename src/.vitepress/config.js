@@ -70,6 +70,10 @@ export default defineConfig({
         link: '/guide/'
       },
       {
+        text: 'Blog',
+        link: '/blog/'
+      },
+      {
         text: 'GitHub',
         link: 'https://github.com/phenixphp/phenix'
       },
