@@ -632,6 +632,17 @@ html:not(.dark) .phoenix-container .glow-layer {
     list-style: none;
 }
 
+.vp-doc .blog-card__tags,
+.vp-doc .blog-post-header__tags {
+    padding-left: 0;
+    list-style: none;
+}
+
+.vp-doc .blog-card__tags li,
+.vp-doc .blog-post-header__tags li {
+    margin-top: 0;
+}
+
 .blog-index__tags {
     margin: 0;
 }
@@ -713,12 +724,20 @@ html:not(.dark) .phoenix-container .glow-layer {
 
 .blog-card__tags li,
 .blog-post-header__tags li {
+    margin: 0;
     padding: 4px 9px;
     border: 1px solid var(--vp-c-divider);
     border-radius: 6px;
     color: var(--vp-c-text-2);
     font-size: 12px;
     font-weight: 700;
+    line-height: 1.4;
+    list-style: none;
+}
+
+.blog-card__tags li::marker,
+.blog-post-header__tags li::marker {
+    content: '';
 }
 
 .blog-index__empty {
