@@ -95,6 +95,7 @@ export default defineConfig({
             { text: 'Architecture', link: '/guide/architecture' },
             { text: 'Providers', link: '/guide/providers' },
             { text: 'Routing', link: '/guide/routing' },
+            { text: 'Server-sent events', link: '/guide/server_sent_events' },
             { text: 'Controllers', link: '/guide/controllers' },
             { text: 'Middlewares', link: '/guide/middlewares' },
             { text: 'Validation', link: '/guide/validation' },

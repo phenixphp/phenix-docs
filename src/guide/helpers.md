@@ -50,6 +50,8 @@ Creates a new response instance.
 return response()->json(['ok' => true]);
 ```
 
+For streaming updates to a browser, see [Server-sent events](/guide/server_sent_events).
+
 ## env
 
 Signature:

@@ -129,12 +129,12 @@ $this->post(
 
 `TestCase` provides shortcut methods for common verbs:
 
-- `get(string $path, array $parameters = [], array $headers = [])`
-- `post(string $path, Form|array|string|null $body = null, array $parameters = [], array $headers = [])`
-- `put(string $path, Form|array|string|null $body = null, array $parameters = [], array $headers = [])`
-- `patch(string $path, Form|array|string|null $body = null, array $parameters = [], array $headers = [])`
-- `delete(string $path, array $parameters = [], array $headers = [])`
-- `options(string $path, array|string|null $body = null, array $parameters = [], array $headers = [])`
+- `get(string $path, array $headers = [])`
+- `post(string $path, Form|array|string|null $body = null, array $headers = [])`
+- `put(string $path, Form|array|string|null $body = null, array $headers = [])`
+- `patch(string $path, Form|array|string|null $body = null, array $headers = [])`
+- `delete(string $path, array $headers = [])`
+- `options(string $path, array|string|null $body = null, array $headers = [])`
 
 Use `call()` when you need a verb/body combination that is not covered by the shortcuts.
 
@@ -222,6 +222,7 @@ Header helpers are useful for exact header checks and content-type assertions:
 - `assertIsJson()`
 - `assertIsHtml()`
 - `assertIsPlainText()`
+- `assertIsEventStream()`
 
 `assertHeaders()` compares exact values, so include the full header value when needed.
 
@@ -244,6 +245,20 @@ $this->get('/redirect')
         'Referrer-Policy',
     ]);
 ```
+
+For server-sent events, combine the content-type assertion with checks for complete or partial event frames:
+
+```php
+$this->get('/events')
+    ->assertOk()
+    ->assertIsEventStream()
+    ->assertBodyContains([
+        "event: notification\n",
+        "data: Event 0\n\n",
+    ]);
+```
+
+`TestResponse` buffers the complete response body, so event streams used in feature tests must be finite. See the [Server-sent events guide](/guide/server_sent_events#testing-event-streams) for a complete example.
 
 ### JSON assertions
 
