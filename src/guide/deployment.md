@@ -52,7 +52,7 @@ These settings are independent. You can run:
 - Set `APP_ENV=production`
 - Set `APP_DEBUG=false`
 - Set `APP_DEBUG_LEVEL=200` or higher
-- Configure `APP_URL`, `APP_PORT`, `APP_MODE`, and `APP_SERVER_MODE`
+- Configure `APP_URL`, `APP_HOST`, `APP_PORT`, `APP_MODE`, and `APP_SERVER_MODE`
 - Set a valid `APP_KEY`
 - Configure database access with `DB_*`
 - Configure Redis access with `REDIS_*`
@@ -72,6 +72,7 @@ APP_ENV=production
 APP_DEBUG=false
 APP_DEBUG_LEVEL=200
 APP_URL=https://example.com
+APP_HOST=0.0.0.0
 APP_PORT=1337
 APP_MODE=proxied
 APP_SERVER_MODE=single
@@ -109,6 +110,9 @@ Notes:
 
 - `APP_MODE=direct` means Phenix receives client traffic directly.
 - `APP_MODE=proxied` means traffic arrives through a reverse proxy or load balancer.
+- `APP_URL` is the canonical public URL used in generated links and cookie defaults. It must not contain the internal container port unless that port is publicly visible.
+- `APP_HOST` controls only the local interface where Phenix listens. Use `0.0.0.0` in a container that must accept traffic through its network interface.
+- `APP_PORT` controls only the local listening port. It is never appended automatically to `APP_URL`.
 - When `APP_MODE=proxied`, `APP_TRUSTED_PROXIES` must resolve to a non-empty array of trusted IPs or CIDRs. Trust only known proxy ranges.
 - `APP_TRUSTED_PROXIES` should never be left empty in proxied mode and should not use overly broad ranges.
 - `APP_KEY` is required by the crypto services. See [Cryptography](./crypto.md).
@@ -346,6 +350,7 @@ USER root
 
 WORKDIR /var/www/html
 
+ENV APP_HOST=0.0.0.0
 ENV APP_PORT=1337
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
@@ -380,7 +385,7 @@ Create `docker/entrypoint.sh`:
 set -eu
 
 echo "Starting production server..."
-exec php public/index.php --host=0.0.0.0 --port="${APP_PORT:-1337}"
+exec php public/index.php
 ```
 
 Make the entrypoint executable:
@@ -399,7 +404,8 @@ Important runtime behavior:
 
 - The documented production target sets `APP_ENV=production`.
 - The documented image uses `docker/entrypoint.sh` as its entrypoint.
-- That entrypoint starts `php public/index.php --host=0.0.0.0 --port="${APP_PORT:-1337}"`.
+- That entrypoint starts `php public/index.php`; the listener reads
+  `APP_HOST` and `APP_PORT` from the environment.
 
 Expected external services for a typical container deployment:
 

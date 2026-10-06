@@ -55,7 +55,7 @@ When `driver=redis`, Phenix uses `session.connection` and resolves it against `c
 
 Cookie attributes are built from session config and host:
 
-- `domain`: `session.domain` (or current app host if null)
+- `domain`: `session.domain` (or the public `APP_URL` host if null; the bind host is never used)
 - `expiry`: current time + `session.lifetime` minutes
 - `same_site`: `Lax`, `Strict`, or `None`
 - `path`: `session.path`

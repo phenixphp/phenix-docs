@@ -19,12 +19,20 @@ Phenix runtime behavior is controlled by two independent configuration dimension
 - **App Mode** (`direct` or `proxied`): controls how client connection metadata is resolved.
 - **Server runtime mode** (`single` or `cluster`): controls process model and worker execution.
 
+The public application URL is independent from the socket exposed by the
+server. `APP_URL` is the canonical URL used to generate links and cookie
+domains. `APP_HOST` and `APP_PORT` select the local listening address and do
+not alter the canonical URL.
+
 These are configured in `config/app.php`:
 
 ```php
 'app_mode' => env('APP_MODE', static fn (): string => 'direct'),
 'trusted_proxies' => env('APP_TRUSTED_PROXIES', static fn (): array => []),
 'server_mode' => env('APP_SERVER_MODE', static fn (): string => 'single'),
+'url' => env('APP_URL', static fn (): string => 'http://127.0.0.1:1337'),
+'host' => env('APP_HOST', static fn (): string => '127.0.0.1'),
+'port' => env('APP_PORT', static fn (): int => 1337),
 ```
 
 For CORS configuration, see [CORS (`HandleCors`)](middlewares.md#cors-handlecors) in the Middlewares guide.
@@ -104,15 +112,17 @@ vendor/bin/cluster --help
 
 ## Protocol and TLS Detection
 
-Protocol is detected at runtime using `app.url` and `app.cert_path`:
+The protocol of the local listener is detected using `app.cert_path`:
 
-- `Protocol::HTTPS` is used only when `app.url` starts with `https://` and `app.cert_path` is not `null`.
-- Otherwise, Phenix runs as `Protocol::HTTP`.
+- `Protocol::HTTPS` is used when `app.cert_path` contains a certificate path.
+- Otherwise, the local listener uses HTTP, even when the public `APP_URL` is
+  HTTPS because a trusted reverse proxy terminates TLS.
 
 TLS example:
 
 ```php
-'url' => 'https://127.0.0.1',
+'url' => 'https://example.com',
+'host' => '0.0.0.0',
 'port' => 1337,
 'cert_path' => base_path('certs/server.pem'),
 ```
@@ -124,8 +134,9 @@ TLS example:
 | `app.app_mode` | `string` | `direct` \| `proxied` |
 | `app.trusted_proxies` | `array<string>` | Trusted proxy IPs/CIDRs (required when `proxied`) |
 | `app.server_mode` | `string` | `single` \| `cluster` |
-| `app.url` | `string` | Base application URL |
-| `app.port` | `int` | Port used by exposed socket |
+| `app.url` | `string` | Canonical public URL, including a non-standard public port when needed |
+| `app.host` | `string` | Local interface where the HTTP server listens; it is not used to generate URLs |
+| `app.port` | `int` | Local port where the HTTP server listens; it is not appended to `app.url` |
 | `app.cert_path` | `string \| null` | TLS certificate path used for HTTPS |
 
 ## Notes and Current Behaviors
@@ -134,3 +145,6 @@ TLS example:
 - Invalid `server_mode` values fall back to `single`.
 - Trusted proxies validation is applied in both single and cluster servers when `app_mode=proxied`.
 - Cluster mode and app mode are independent. You can run `cluster + direct` or `cluster + proxied`.
+- `APP_URL`, `APP_HOST`, and `APP_PORT` are independent. For example, an
+  application can publish `https://api.example.com` while listening internally
+  on `0.0.0.0:1337`.
