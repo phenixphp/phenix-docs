@@ -230,7 +230,28 @@ Generated migration filename:
 
 ### Redis Driver
 
-`redis` uses Redis data structures and Lua scripts for atomic pop/reserve/retry/fail behavior.
+`redis` stores each payload under its task ID and uses queue-specific `ready`,
+`reserved`, and `delayed` structures. Lua scripts atomically perform push,
+pop/reserve, acknowledgement, retry and failure transitions.
+
+If a worker dies after reservation, the task ID and payload remain available in
+Redis until the reservation can be recovered. Redis persistence and replication
+must be configured separately according to the application's durability needs.
+The next pop from that queue moves an expired task back to its original ready
+queue. Delivery is therefore **at least once**; task handlers must remain
+idempotent.
+
+Configure the lease duration with `REDIS_QUEUE_RESERVATION_TIMEOUT`. It must be
+longer than the expected execution time of a task. A task still running after
+its lease expires may be reserved by another worker.
+
+This key layout is incompatible with the previous Redis queue implementation.
+Drain old Redis queues before upgrading; existing `queues:{name}` payload lists
+are not migrated automatically.
+
+Calling `clear()` removes pending and delayed tasks from the selected queue. It
+does not delete active reservations; those remain available for acknowledgement
+or recovery after their lease expires.
 
 ## CLI Commands
 
@@ -278,6 +299,7 @@ return [
         'redis' => [
             'connection' => env('REDIS_QUEUE_CONNECTION', static fn (): string => 'default'),
             'queue' => env('REDIS_QUEUE', static fn (): string => 'default'),
+            'reservation_timeout' => env('REDIS_QUEUE_RESERVATION_TIMEOUT', static fn (): int => 60),
         ],
     ],
 ];

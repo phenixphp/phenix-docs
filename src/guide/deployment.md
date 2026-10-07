@@ -118,6 +118,8 @@ Notes:
 - `APP_KEY` is required by the crypto services. See [Cryptography](./crypto.md).
 - `APP_DEBUG_LEVEL=200` writes `info` and higher logs. Use `300` or `400` for quieter production logging.
 - Use the Redis connection override variables only when you need a non-default Redis connection for a subsystem.
+- The optional `REDIS_QUEUE_RESERVATION_TIMEOUT` setting must exceed normal task execution time. Its default is `60` seconds; expired reservations are delivered again.
+- Scheduled callbacks require Redis for distributed occurrence locks.
 
 ## Redis Recommendation
 
@@ -417,7 +419,7 @@ Container recommendations:
 
 - Run the HTTP server container separately from queue workers.
 - Run the scheduler separately from the HTTP server container.
-- Mount or persist only what your deployment needs; application state for sessions, cache, and queues should prefer Redis instead of local container storage.
+- Mount or persist only what your deployment needs; application state for sessions, cache, and queues must use a shared backend instead of local container storage.
 
 ## Running Background Processes
 

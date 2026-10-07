@@ -4,216 +4,127 @@
 
 - [Overview](#overview)
 - [Defining schedules](#defining-schedules)
-- [Cron-style schedules](#cron-style-schedules)
-- [Timers](#timers)
-- [Timers vs schedule calls](#timers-vs-schedule-calls)
-- [Running scheduled tasks](#running-scheduled-tasks)
+- [Distributed occurrence lock](#distributed-occurrence-lock)
+- [Frequency and timezone](#frequency-and-timezone)
+- [Running schedules](#running-schedules)
+- [Breaking changes](#breaking-changes)
 - [Worker behavior](#worker-behavior)
-- [API reference](#api-reference)
-  - [Schedule facade](#schedule-facade)
-  - [Scheduler methods](#scheduler-methods)
-  - [Timer methods](#timer-methods)
-- [Notes and current behaviors](#notes-and-current-behaviors)
 
 ## Overview
 
-Phenix Scheduling provides two execution models:
+Phenix runs named cron schedules in a dedicated scheduler process. Scheduled
+business work never starts inside HTTP workers, so increasing the HTTP cluster
+size does not multiply scheduled executions.
 
-- Cron-style schedules using `Schedule::call(...)` and `Scheduler`.
-- Interval timers using `Schedule::timer(...)` and `Timer`.
+Two commands are available:
 
-It also provides two CLI commands:
+- `php phenix schedule:run`: evaluates schedules once and exits.
+- `php phenix schedule:work`: continuously evaluates schedules once per minute.
 
-- `php phenix schedule:run`: executes scheduled cron tasks once.
-- `php phenix schedule:work`: runs a long-lived worker loop for cron tasks.
-
-Recommended runtime approach: use `schedule:work` as the primary process for cron schedules.
+Production deployments should run `schedule:work` separately from the HTTP
+server and queue workers.
 
 ## Defining schedules
 
-Schedules are loaded from:
-
-```txt
-schedule/schedules.php
-```
-
-This file is loaded automatically by `SchedulingServiceProvider` when it exists.
-
-Example:
+Schedules are loaded from `schedule/schedules.php`:
 
 ```php
 <?php
 
 declare(strict_types=1);
 
+use App\Tasks\DeleteExpiredTokens;
 use Phenix\Facades\Schedule;
 
-Schedule::call(function (): void {
-    // Cron-style task
-})->dailyAt('03:30');
-
-Schedule::timer(function (): void {
-    // Interval timer task
-})->everyFiveMinutes();
+Schedule::call('delete-expired-tokens', function (): void {
+    DeleteExpiredTokens::dispatch();
+})->everyMinute();
 ```
 
-## Cron-style schedules
+The first argument is a required, stable, application-wide name. Duplicate
+names are rejected while the application boots.
 
-Use `Schedule::call(...)` to define cron-based tasks.
+Prefer dispatching a durable queue task from the callback. The scheduler
+decides when work is due; queue workers execute and retry it.
+
+## Distributed occurrence lock
+
+Before invoking a due callback, Phenix acquires a Redis lock for the schedule
+name and UTC minute. If two scheduler processes evaluate the same occurrence,
+only one invokes the callback.
+
+Configure the lock in `config/schedule.php`:
 
 ```php
-use Phenix\Facades\Schedule;
+return [
+    'connection' => env('SCHEDULE_REDIS_CONNECTION', static fn (): string => 'default'),
+    'lock_prefix' => env('SCHEDULE_LOCK_PREFIX', static fn (): string => 'phenix:schedule:'),
+    'occurrence_ttl' => env('SCHEDULE_OCCURRENCE_TTL', static fn (): int => 86400),
+];
+```
 
-Schedule::call(function (): void {
-    // Runs every day at 07:30 in New York time
+Redis is therefore required when schedules are enabled. The occurrence lock is
+a duplicate-dispatch guard, not a durable job store. A callback should enqueue
+important work rather than perform a long operation directly.
+
+If a callback throws, Phenix releases its occurrence lock so another evaluation
+can retry it. A process failure after acquiring the lock cannot release it, so
+the lock expires after `occurrence_ttl`. Scheduled callbacks should remain short
+and dispatch durable, idempotent queue tasks.
+
+## Frequency and timezone
+
+```php
+Schedule::call('daily-report', function (): void {
+    GenerateDailyReport::dispatch();
 })->dailyAt('07:30')->timezone('America/New_York');
 ```
 
-Common helpers:
+Available helpers:
 
 - `hourly()`, `daily()`, `weekly()`, `monthly()`
-- `everyMinute()`, `everyFiveMinutes()`, `everyTenMinutes()`, `everyFifteenMinutes()`, `everyThirtyMinutes()`
-- `everyTwoHours()`, `everyTwoDays()`, `everyWeekday()`, `everyWeekend()`, `mondays()`, `fridays()`
+- `everyMinute()`, `everyFiveMinutes()`, `everyTenMinutes()`
+- `everyFifteenMinutes()`, `everyThirtyMinutes()`
+- `everyTwoHours()`, `everyTwoDays()`
+- `everyWeekday()`, `everyWeekend()`, `mondays()`, `fridays()`
 - `dailyAt('HH:MM')`, `weeklyAt('HH:MM')`, `at('HH:MM')`
+- `timezone(string $timezone)`
 
-## Timers
+Timezone defaults to UTC. The distributed occurrence key always uses the UTC
+minute, independently of the timezone used to evaluate the cron expression.
 
-Use `Schedule::timer(...)` for repeated interval execution.
+## Running schedules
 
-```php
-use Phenix\Facades\Schedule;
-
-Schedule::timer(function (): void {
-    // Cleanup or retry logic every 10 seconds
-})->everyTenSeconds();
-```
-
-Milliseconds are supported:
-
-```php
-Schedule::timer(function (): void {
-    // Fast poller
-})->milliseconds(250);
-```
-
-Timer control methods:
-
-- `reference()` / `unreference()`
-- `enable()` / `disable()`
-- `isEnabled()`
-
-## Timers vs schedule calls
-
-`Schedule::call(...)` and `Schedule::timer(...)` are executed by different runtimes:
-
-- `schedule:run` and `schedule:work` execute cron schedules (`Schedule::call(...)`) through `Schedule::run()`.
-- Timers (`Schedule::timer(...)`) are **not** executed by `schedule:run` or `schedule:work`.
-
-Timers are started automatically by the server runtime event loop when the app boots and runs `TimerRegistry::run()`.
-
-In practice:
-
-- Use `Schedule::call(...)` for minute-based cron execution with `schedule:run` / `schedule:work`.
-- Use `Schedule::timer(...)` for interval-based execution inside the running server process.
-
-## Running scheduled tasks
-
-Run cron schedules once:
+Run once, typically from an external cron service:
 
 ```bash
 php phenix schedule:run
 ```
 
-Run cron schedules continuously (recommended):
+Run as a managed long-lived process:
 
 ```bash
 php phenix schedule:work
 ```
 
-Typical production pattern is to keep `schedule:work` running as a managed process.
+Although the distributed lock prevents duplicate occurrences, keep one
+scheduler replica under normal operation. The lock protects deployments,
+restarts and accidental overlap.
+
+## Breaking changes
+
+- `Schedule::call()` now requires a stable name before the closure.
+- `Schedule::timer()`, `Timer` and `TimerRegistry` were removed.
+- HTTP server startup no longer starts periodic business work.
+- Work requiring intervals shorter than one minute should use a dedicated
+  managed process, not an HTTP worker.
 
 ## Worker behavior
 
-`ScheduleWorker` currently behaves as follows:
+`ScheduleWorker`:
 
-- Poll loop sleeps every `100ms`.
-- Time source is `UTC` (`Date::now('UTC')`).
-- It runs schedules only when `second === 0`.
-- It prevents duplicate execution within the same minute using a `Y-m-d H:i` key.
-- It listens for `SIGINT` and `SIGTERM` and exits gracefully.
-
-## API reference
-
-### Schedule facade
-
-- `Schedule::call(Closure $closure): Scheduler`
-- `Schedule::timer(Closure $closure): Timer`
-- `Schedule::run(): void`
-
-### Scheduler methods
-
-Core:
-
-- `hourly(): self`
-- `daily(): self`
-- `weekly(): self`
-- `monthly(): self`
-- `everyMinute(): self`
-- `everyFiveMinutes(): self`
-- `everyTenMinutes(): self`
-- `everyFifteenMinutes(): self`
-- `everyThirtyMinutes(): self`
-- `everyTwoHours(): self`
-- `everyTwoDays(): self`
-- `everyWeekday(): self`
-- `everyWeekend(): self`
-- `mondays(): self`
-- `fridays(): self`
-
-Time composition:
-
-- `dailyAt(string $time): self`
-- `weeklyAt(string $time): self`
-- `at(string $time): self`
-- `timezone(string $tz): self`
-
-Execution:
-
-- `tick(Date|null $now = null): void`
-
-### Timer methods
-
-Interval setup:
-
-- `seconds(float $seconds): self`
-- `milliseconds(int $milliseconds): self`
-- `everySecond(): self`
-- `everyTwoSeconds(): self`
-- `everyFiveSeconds(): self`
-- `everyTenSeconds(): self`
-- `everyFifteenSeconds(): self`
-- `everyThirtySeconds(): self`
-- `everyMinute(): self`
-- `everyTwoMinutes(): self`
-- `everyFiveMinutes(): self`
-- `everyTenMinutes(): self`
-- `everyFifteenMinutes(): self`
-- `everyThirtyMinutes(): self`
-- `hourly(): self`
-
-Lifecycle:
-
-- `reference(): self`
-- `unreference(): self`
-- `run(): self`
-- `enable(): self`
-- `disable(): self`
-- `isEnabled(): bool`
-
-## Notes and current behaviors
-
-- Scheduler timezone defaults to `UTC`.
-- `schedule:run` triggers only cron schedules (`Schedule::run()`); it does not run interval timers.
-- Timers are registered in `TimerRegistry` and are started when the server runtime calls `TimerRegistry::run()`.
-- Timer intervals have a minimum effective value of `0.001` seconds.
-- For timers, you should define interval methods (for example `everySecond()` or `milliseconds(100)`) before runtime starts timers.
+- uses UTC as its clock;
+- evaluates schedules at the start of each minute;
+- avoids repeated evaluation of the same minute inside one process;
+- relies on the Redis occurrence lock across processes;
+- handles `SIGINT` and `SIGTERM` for graceful shutdown.
